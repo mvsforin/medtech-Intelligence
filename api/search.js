@@ -1,15 +1,13 @@
 /**
- * /api/search?code=NQR&limit=100&skip=0&type=510k
+ * /api/search?code=NQR&limit=100&type=all
  *
- * Proxy para openFDA API — resolve CORS do browser.
- * Chamado pelo front toda vez que o usuário seleciona especialidade + produto.
- * Dados sempre atuais (FDA atualiza semanalmente).
+ * Proxy openFDA API — resolve CORS.
+ * Deduplicação por número de submissão (pma_number / k_number),
+ * mantendo apenas o registro mais recente de cada produto.
  */
 
 const FDA_BASE = 'https://api.fda.gov/device';
 
-// Fabricantes com subsidiária confirmada no Brasil
-// (evita falsos positivos — cf. normalize_brand do Radar)
 const BR_SUBSIDIARIES = new Set([
   'medtronic','stryker','zimmer','biomet','johnson','depuy','synthes',
   'smith nephew','arthrex','b braun','braun','olympus','abbott','baxter',
@@ -18,7 +16,6 @@ const BR_SUBSIDIARIES = new Set([
   'codman','conmed','cook medical',
 ]);
 
-// Sufixos corporativos para normalização de nome
 const CORP_SUFFIXES = [
   /\bInc\.?\b/gi, /\bLtd\.?\b/gi, /\bLLC\b/gi, /\bCorp\.?\b/gi,
   /\bGmbH\b/gi, /\bAG\b/gi, /\bBV\b/gi, /\bSA\b/gi, /\bSRL\b/gi,
@@ -31,9 +28,7 @@ const CORP_SUFFIXES = [
 
 function normalizeBrand(applicant = '') {
   let brand = applicant.trim();
-  for (const re of CORP_SUFFIXES) {
-    brand = brand.replace(re, '');
-  }
+  for (const re of CORP_SUFFIXES) brand = brand.replace(re, '');
   return brand.replace(/\s+/g, ' ').replace(/[.,;()\-]+$/g, '').trim().toLowerCase();
 }
 
@@ -54,86 +49,104 @@ function anvisaStatus(applicant = '') {
 
 function parseDecisionDate(raw = '') {
   if (!raw || raw.length < 8) return { date: null, year: null };
-  // FDA retorna YYYYMMDD
   const clean = raw.replace(/-/g, '');
-  const year  = clean.substring(0, 4);
-  const month = clean.substring(4, 6);
-  const day   = clean.substring(6, 8);
   return {
-    date: `${year}-${month}-${day}`,
-    year,
+    date: `${clean.substring(0,4)}-${clean.substring(4,6)}-${clean.substring(6,8)}`,
+    year: clean.substring(0, 4),
   };
 }
 
 function monthsSince(dateStr = '') {
   if (!dateStr) return null;
-  const d    = new Date(dateStr);
-  const now  = new Date();
-  const diff = (now.getFullYear() - d.getFullYear()) * 12 + (now.getMonth() - d.getMonth());
-  return diff;
+  const d   = new Date(dateStr);
+  const now = new Date();
+  return (now.getFullYear() - d.getFullYear()) * 12 + (now.getMonth() - d.getMonth());
 }
 
 async function fetchFDA(endpoint, params) {
   const url = new URL(`${FDA_BASE}/${endpoint}.json`);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-
   const resp = await fetch(url.toString(), {
     headers: { 'User-Agent': 'MedTech-Intelligence/1.0' },
     signal: AbortSignal.timeout(15000),
   });
-
-  if (resp.status === 404) return { results: [], total: 0 };
-  if (!resp.ok) throw new Error(`FDA API ${resp.status}: ${url}`);
-
+  if (resp.status === 404) return { results: [] };
+  if (!resp.ok) throw new Error(`FDA API ${resp.status}`);
   const data = await resp.json();
-  return {
-    results: data.results || [],
-    total:   data.meta?.results?.total || 0,
-  };
+  return { results: data.results || [] };
+}
+
+/**
+ * DEDUPLICAÇÃO INTELIGENTE:
+ * PMA: cada produto tem um número base (P220014).
+ *   A FDA registra suplementos (updates, changes) como linhas separadas
+ *   com o mesmo número mas datas diferentes.
+ *   → Deduplicamos por pma_number, mantendo apenas o registro mais recente.
+ *
+ * 510(k): cada produto tem um número único (K231234).
+ *   Não há suplementos no banco 510k — duplicatas são raras mas podem
+ *   ocorrer por erro de indexação.
+ *   → Deduplicamos por k_number.
+ */
+function deduplicatePMA(rows) {
+  const map = new Map();
+  for (const r of rows) {
+    const key = r.pma_number;
+    if (!map.has(key)) {
+      map.set(key, r);
+    } else {
+      // Manter o registro com decision_date mais recente
+      const existing = map.get(key);
+      if ((r.decision_date || '') > (existing.decision_date || '')) {
+        map.set(key, r);
+      }
+    }
+  }
+  return Array.from(map.values());
+}
+
+function deduplicate510k(rows) {
+  const seen = new Set();
+  return rows.filter(r => {
+    if (seen.has(r.k_number)) return false;
+    seen.add(r.k_number);
+    return true;
+  });
 }
 
 export default async function handler(req, res) {
-  // CORS — permite chamadas do GitHub Pages e localhost
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Cache-Control', 'public, s-maxage=3600'); // cache 1h na Vercel
+  res.setHeader('Cache-Control', 'public, s-maxage=3600');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-  const {
-    code,
-    limit = '100',
-    skip  = '0',
-    type  = 'all',  // all | 510k | pma
-    sort  = 'decision_date:desc',
-  } = req.query;
+  const { code, limit = '100', skip = '0', type = 'all', sort = 'decision_date:desc' } = req.query;
 
-  if (!code) {
-    return res.status(400).json({ error: 'Parâmetro "code" obrigatório. Ex: ?code=NQR' });
-  }
+  if (!code) return res.status(400).json({ error: 'Parâmetro "code" obrigatório. Ex: ?code=NQR' });
 
   const productCode = code.toUpperCase().trim();
-  const lim  = Math.min(parseInt(limit, 10) || 100, 100);
-  const sk   = parseInt(skip, 10) || 0;
+  const lim = Math.min(parseInt(limit, 10) || 100, 100);
+  const sk  = parseInt(skip, 10) || 0;
 
   try {
     const results = [];
 
-    // ── 510(k) ────────────────────────────────────────────────────────────
+    // ── 510(k) ──────────────────────────────────────────────────────────────
     if (type === 'all' || type === '510k') {
-      const { results: rows510, total } = await fetchFDA('510k', {
+      const { results: raw510 } = await fetchFDA('510k', {
         search: `product_code:${productCode}`,
-        limit:  lim,
-        skip:   sk,
-        sort,
+        limit: lim, skip: sk, sort,
       });
 
-      for (const r of rows510) {
+      // Deduplicar por k_number
+      const deduped = deduplicate510k(raw510);
+
+      for (const r of deduped) {
         const { date, year } = parseDecisionDate(r.decision_date);
         const anvisa = anvisaStatus(r.applicant);
         const months = monthsSince(date);
-
         results.push({
           fda_number:    r.k_number,
           submission:    '510(k)',
@@ -145,29 +158,30 @@ export default async function handler(req, res) {
           months_since:  months,
           product_code:  r.product_code || productCode,
           device_class:  r.device_class || 'II',
-          // ANVISA
           anvisa_status: anvisa.status,
           anvisa_label:  anvisa.label,
           anvisa_note:   anvisa.note,
-          // Flag de oportunidade: FDA aprovado <24 meses e sem ANVISA identificado
           is_opportunity: anvisa.status === 'open' && months !== null && months <= 24,
         });
       }
     }
 
-    // ── PMA ───────────────────────────────────────────────────────────────
+    // ── PMA ─────────────────────────────────────────────────────────────────
     if (type === 'all' || type === 'pma') {
-      const { results: rowsPMA } = await fetchFDA('pma', {
+      // Buscar com limit maior para garantir que pegamos todos os suplementos
+      // antes de deduplicar (assim temos a versão mais recente de cada produto)
+      const { results: rawPMA } = await fetchFDA('pma', {
         search: `product_code:${productCode}`,
-        limit:  Math.min(lim, 50),
-        sort,
+        limit: 100, sort,
       });
 
-      for (const r of rowsPMA) {
+      // Deduplicar por pma_number — mantém só o mais recente de cada produto
+      const deduped = deduplicatePMA(rawPMA);
+
+      for (const r of deduped) {
         const { date, year } = parseDecisionDate(r.decision_date);
         const anvisa = anvisaStatus(r.applicant);
         const months = monthsSince(date);
-
         results.push({
           fda_number:    r.pma_number,
           submission:    'PMA',
@@ -187,11 +201,11 @@ export default async function handler(req, res) {
       }
     }
 
-    // Ordena: sem ANVISA primeiro, depois por data decrescente
+    // Ordenar: sem ANVISA primeiro, depois mais recente
     results.sort((a, b) => {
       const stOrder = { open: 0, check: 1, taken: 2 };
-      const stDiff  = (stOrder[a.anvisa_status] || 0) - (stOrder[b.anvisa_status] || 0);
-      if (stDiff !== 0) return stDiff;
+      const diff = (stOrder[a.anvisa_status] || 0) - (stOrder[b.anvisa_status] || 0);
+      if (diff !== 0) return diff;
       return (b.decision_date || '').localeCompare(a.decision_date || '');
     });
 
@@ -206,10 +220,6 @@ export default async function handler(req, res) {
 
   } catch (err) {
     console.error('[search]', err.message);
-    return res.status(500).json({
-      ok:    false,
-      error: err.message,
-      product_code: productCode,
-    });
+    return res.status(500).json({ ok: false, error: err.message, product_code: productCode });
   }
 }
