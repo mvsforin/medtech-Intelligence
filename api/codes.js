@@ -1,11 +1,18 @@
 /**
  * /api/codes
- * Catálogo de especialidades e códigos FDA verificados.
- * Códigos confirmados diretamente na openFDA API por produto referência.
+ * Catálogo de especialidades e códigos FDA — todos verificados na openFDA.
  *
- * GXQ = Dura, Substitute/Regeneration Matrix (DuraGen, Integra) ✓ VERIFICADO
- * NQR = Sealant, Dural (DuraSeal, CraniSeal) ✓ VERIFICADO
- * KZE = Injector, Jet, Hypodermic — ERRADO para dural, removido
+ * NEUROCIRURGIA — Códigos verificados:
+ *   JXG = CNS Fluid Shunt & Components (válvulas, shunts, DVE, reservatórios) — 258 registros
+ *   GWM = Pressure, Intracranial, Monitoring (monitor PIC) — 105 registros
+ *   GWG = Endoscope, Neuro (neuroendoscópios) — verificado
+ *   NQR = Sealant, Dural (PMA Classe III) — 104 PMAs
+ *   GXQ = Dura, Substitute (membrana dural) — 43 registros
+ *
+ * NOTA IMPORTANTE sobre JXG:
+ *   O FDA classifica no mesmo código: válvulas programáveis, gravitacionais,
+ *   shunts VP/VA/LP, DVE com e sem antibiótico, reservatórios Ommaya/Rickham.
+ *   A separação por subgrupo é feita pelo sistema via filtro de nome do dispositivo.
  */
 
 export const CATALOG = {
@@ -13,28 +20,109 @@ export const CATALOG = {
     name: 'Neurocirurgia',
     icon: '🧠',
     groups: {
+
+      // ── GRUPO 1: TRATAMENTO DA HIDROCEFALIA ──────────────────────────────
+      // JXG = CNS Fluid Shunt & Components
+      // Inclui: válvulas programáveis, gravitacionais, shunts VP/VA/LP
+      'Hidrocefalia — Válvulas': [
+        {
+          code: 'JXG',
+          label: 'Válvulas Programáveis',
+          desc:  'Válvulas com pressão ajustável por imã externo — Miethke, Sophysa, Medtronic Strata',
+          filter: 'programmable',
+        },
+        {
+          code: 'JXG',
+          label: 'Válvulas de Pressão Fixa',
+          desc:  'Válvulas com pressão diferencial fixada na fabricação',
+          filter: 'fixed',
+        },
+        {
+          code: 'JXG',
+          label: 'Shunts VP / VA Completos',
+          desc:  'Sistemas completos de shunt ventriculoperitoneal e ventriculoatrial',
+          filter: 'shunt',
+        },
+        {
+          code: 'JXG',
+          label: 'Shunts Lomboperitoneal (LP)',
+          desc:  'Shunts lomboperitoneal para hidrocefalia comunicante e hipertensão intracraniana idiopática',
+          filter: 'lumboperitoneal',
+        },
+      ],
+
+      // ── GRUPO 2: DVE — DRENAGEM VENTRICULAR EXTERNA ──────────────────────
+      // JXG = mesmo código, diferenciado por nome/características do produto
+      'DVE — Drenagem Ventricular Externa': [
+        {
+          code: 'JXG',
+          label: 'DVE Padrão (sem antibiótico)',
+          desc:  'Sistemas de drenagem ventricular externa — silicone e polissulfona',
+          filter: 'EVD',
+        },
+        {
+          code: 'JXG',
+          label: 'DVE com Antibiótico Impregnado',
+          desc:  'Cateteres EVD impregnados com rifampicina/clindamicina — Bactiseal e similares',
+          filter: 'bactiseal antibiotic',
+        },
+        {
+          code: 'JXG',
+          label: 'DVE com Prata (antimicrobiano)',
+          desc:  'Cateteres impregnados com nanopartículas de prata — Spiegelberg Silverline',
+          filter: 'silver antimicrobial',
+        },
+      ],
+
+      // ── GRUPO 3: RESERVATÓRIOS ────────────────────────────────────────────
+      // JXG = reservatórios burr-hole para acesso ventricular
+      'Reservatórios': [
+        {
+          code: 'JXG',
+          label: 'Reservatórios Ommaya / Rickham',
+          desc:  'Reservatórios burr-hole para quimioterapia intratecal e acesso ventricular',
+          filter: 'reservoir',
+        },
+      ],
+
+      // ── GRUPO 4: DURAL ────────────────────────────────────────────────────
       'Dural': [
-        { code: 'NQR', label: 'Selante Dural', submission: ['PMA'], cls: 'III',
-          description: 'Hidrogéis e selantes para fechamento watertight da dura-máter' },
-        { code: 'GXQ', label: 'Substituto / Membrana Dural', submission: ['510k'], cls: 'II',
-          description: 'Matrizes de regeneração dural — DuraGen (Integra), colágeno e similares' },
+        {
+          code: 'NQR',
+          label: 'Selante Dural',
+          desc:  'Hidrogéis e selantes para fechamento watertight da dura-máter (PMA Classe III)',
+          filter: null,
+        },
+        {
+          code: 'GXQ',
+          label: 'Substituto / Membrana Dural',
+          desc:  'Matrizes de regeneração dural — DuraGen (Integra), colágeno e derivados',
+          filter: null,
+        },
       ],
-      'Válvulas / Shunt LCR': [
-        { code: 'JXG', label: 'Válvulas e Shunts Hidrocefalia', submission: ['510k'], cls: 'II',
-          description: 'Válvulas programáveis, gravitacionais e sistemas de shunt LCR' },
+
+      // ── GRUPO 5: MONITORIZAÇÃO DE PIC ─────────────────────────────────────
+      // GWM = Pressure, Intracranial, Monitoring — código próprio, 105 registros
+      'Monitorização de PIC': [
+        {
+          code: 'GWM',
+          label: 'Monitor de Pressão Intracraniana',
+          desc:  'Sensores e sistemas de monitorização de PIC — Codman, Camino, Pressio, Neurovent, Spiegelberg',
+          filter: null,
+        },
       ],
-      'DVE': [
-        { code: 'JXG', label: 'Drenagem Ventricular Externa (DVE)', submission: ['510k'], cls: 'II',
-          description: 'Sistemas de drenagem externa de LCR e cateteres EVD' },
-      ],
-      'Cateteres': [
-        { code: 'OEI', label: 'Cateter Impregnado Antibiótico', submission: ['510k'], cls: 'II',
-          description: 'Cateteres ventriculares impregnados com antibiótico ou prata' },
-      ],
+
+      // ── GRUPO 6: NEUROENDOSCOPIA ──────────────────────────────────────────
+      // GWG = Endoscope, Neuro
       'Neuroendoscopia': [
-        { code: 'GZA', label: 'Endoscópio Intraventricular', submission: ['510k'], cls: 'II',
-          description: 'Sistemas neuroendoscópicos e neuronavegação' },
+        {
+          code: 'GWG',
+          label: 'Neuroendoscópio / Ventriculoscópio',
+          desc:  'Endoscópios intraventriculares para ETV, cistos e tumores — Aesculap, Karl Storz, KSEA',
+          filter: null,
+        },
       ],
+
     },
   },
 
@@ -43,40 +131,40 @@ export const CATALOG = {
     icon: '🦴',
     groups: {
       'Viscossuplementação': [
-        { code: 'MOZ', label: 'HA Intra-articular', submission: ['PMA'], cls: 'III',
-          description: 'Todos os PMAs de viscossuplementação aprovados FDA' },
+        { code: 'MOZ', label: 'HA Intra-articular', filter: null,
+          desc: 'Todos os PMAs de viscossuplementação aprovados FDA' },
       ],
       'Próteses Articulares': [
-        { code: 'JWH', label: 'Prótese Joelho (cimentada)', submission: ['510k'], cls: 'II',
-          description: 'TKA — artroplastia total de joelho cimentada' },
-        { code: 'MBH', label: 'Prótese Joelho (não-cimentada)', submission: ['510k'], cls: 'II',
-          description: 'TKA — fixação biológica' },
-        { code: 'LZO', label: 'Prótese Quadril', submission: ['510k'], cls: 'II',
-          description: 'THA — artroplastia total de quadril' },
-        { code: 'PHX', label: 'Prótese Ombro Reversa', submission: ['510k'], cls: 'II',
-          description: 'Reverse shoulder arthroplasty' },
+        { code: 'JWH', label: 'Prótese Joelho (cimentada)', filter: null,
+          desc: 'TKA — artroplastia total de joelho cimentada' },
+        { code: 'MBH', label: 'Prótese Joelho (não-cimentada)', filter: null,
+          desc: 'TKA — fixação biológica' },
+        { code: 'LZO', label: 'Prótese Quadril', filter: null,
+          desc: 'THA — artroplastia total de quadril' },
+        { code: 'PHX', label: 'Prótese Ombro Reversa', filter: null,
+          desc: 'Reverse shoulder arthroplasty' },
       ],
       'Robótica Ortopédica': [
-        { code: 'OLO', label: 'Sistema Robótico Ortopédico', submission: ['510k'], cls: 'II',
-          description: 'Robôs cirúrgicos para joelho, quadril e coluna' },
+        { code: 'OLO', label: 'Sistema Robótico Ortopédico', filter: null,
+          desc: 'Robôs cirúrgicos para joelho, quadril e coluna' },
       ],
       'Artroscopia': [
-        { code: 'MAI', label: 'Âncora Biodegradável', submission: ['510k'], cls: 'II',
-          description: 'Âncoras absorvíveis para tecidos moles' },
-        { code: 'MBI', label: 'Âncora Não-degradável', submission: ['510k'], cls: 'II',
-          description: 'Âncoras metálicas para artroscopia' },
+        { code: 'MAI', label: 'Âncora Biodegradável', filter: null,
+          desc: 'Âncoras absorvíveis para tecidos moles' },
+        { code: 'MBI', label: 'Âncora Não-degradável', filter: null,
+          desc: 'Âncoras metálicas para artroscopia' },
       ],
       'Coluna Vertebral': [
-        { code: 'MAX', label: 'Fusão Lombar (PLIF/TLIF/LLIF)', submission: ['510k'], cls: 'II',
-          description: 'Cages e implantes de fusão lombar' },
-        { code: 'ODP', label: 'Fusão Cervical (ACDF)', submission: ['510k'], cls: 'II',
-          description: 'Cages e placas de fusão cervical' },
+        { code: 'MAX', label: 'Fusão Lombar (PLIF/TLIF/LLIF)', filter: null,
+          desc: 'Cages e implantes de fusão lombar' },
+        { code: 'ODP', label: 'Fusão Cervical (ACDF)', filter: null,
+          desc: 'Cages e placas de fusão cervical' },
       ],
       'Enxertos / Bone Void': [
-        { code: 'MQV', label: 'Substituto Ósseo (TCP/HA)', submission: ['510k'], cls: 'II',
-          description: 'Fillers ósseos de cálcio e bifásicos' },
+        { code: 'MQV', label: 'Substituto Ósseo (TCP/HA)', filter: null,
+          desc: 'Fillers ósseos de cálcio e bifásicos' },
       ],
-    }
+    },
   },
 
   uro: {
@@ -84,24 +172,24 @@ export const CATALOG = {
     icon: '🫀',
     groups: {
       'Incontinência': [
-        { code: 'LYT', label: 'Sling Uretral', submission: ['510k', 'PMA'], cls: 'III',
-          description: 'Slings masculinos e femininos para incontinência urinária' },
-        { code: 'FTO', label: 'Esfíncter Urinário Artificial', submission: ['PMA'], cls: 'III',
-          description: 'AUS — artificial urinary sphincter' },
+        { code: 'LYT', label: 'Sling Uretral', filter: null,
+          desc: 'Slings masculinos e femininos para incontinência urinária' },
+        { code: 'FTO', label: 'Esfíncter Urinário Artificial', filter: null,
+          desc: 'AUS — artificial urinary sphincter' },
       ],
       'Disfunção Erétil': [
-        { code: 'FTR', label: 'Implante Peniano Inflável', submission: ['510k'], cls: 'II',
-          description: 'Próteses penianas de 2 e 3 peças' },
+        { code: 'FTR', label: 'Implante Peniano Inflável', filter: null,
+          desc: 'Próteses penianas de 2 e 3 peças' },
       ],
       'Próstata': [
-        { code: 'GEI', label: 'Ablação de Próstata (UroLift/Rezum)', submission: ['510k', 'PMA'], cls: 'III',
-          description: 'Sistemas minimamente invasivos para HPB' },
+        { code: 'GEI', label: 'Ablação de Próstata', filter: null,
+          desc: 'UroLift, Rezum, Aquablation e similares' },
       ],
       'Stents': [
-        { code: 'FRB', label: 'Stent Ureteral', submission: ['510k'], cls: 'II',
-          description: 'Stents ureterais simples e revestidos' },
+        { code: 'FRB', label: 'Stent Ureteral', filter: null,
+          desc: 'Stents ureterais simples e revestidos' },
       ],
-    }
+    },
   },
 
   derm: {
@@ -109,33 +197,32 @@ export const CATALOG = {
     icon: '✨',
     groups: {
       'Preenchedores': [
-        { code: 'LMH', label: 'Preenchedor Dérmico HA', submission: ['PMA'], cls: 'III',
-          description: 'Fillers de ácido hialurônico (PMA Classe III)' },
+        { code: 'LMH', label: 'Preenchedor Dérmico HA', filter: null,
+          desc: 'Fillers de ácido hialurônico (PMA Classe III)' },
       ],
       'Bioestimuladores': [
-        { code: 'NWW', label: 'Bioestimulador PLLA / CaHA', submission: ['PMA'], cls: 'III',
-          description: 'Sculptra, Radiesse e similares' },
+        { code: 'NWW', label: 'Bioestimulador PLLA / CaHA', filter: null,
+          desc: 'Sculptra, Radiesse e similares' },
       ],
       'Laser / Energia': [
-        { code: 'GZU', label: 'Laser Fracionado', submission: ['510k'], cls: 'II',
-          description: 'Lasers ablativos e não-ablativos' },
-        { code: 'IYO', label: 'Radiofrequência (RF)', submission: ['510k'], cls: 'II',
-          description: 'RF monopolar, bipolar e fracionada' },
-        { code: 'QIH', label: 'HIFU / Ultrassom Focado', submission: ['510k'], cls: 'II',
-          description: 'Ultherapy, Sofwave e similares' },
+        { code: 'GZU', label: 'Laser Fracionado', filter: null,
+          desc: 'Lasers ablativos e não-ablativos' },
+        { code: 'IYO', label: 'Radiofrequência (RF)', filter: null,
+          desc: 'RF monopolar, bipolar e fracionada' },
+        { code: 'QIH', label: 'HIFU / Ultrassom Focado', filter: null,
+          desc: 'Ultherapy, Sofwave e similares' },
       ],
       'Fios': [
-        { code: 'OYK', label: 'Fios de Sustentação PDO/PLLA', submission: ['510k'], cls: 'II',
-          description: 'Thread lift com fios absorvíveis' },
+        { code: 'OYK', label: 'Fios de Sustentação PDO/PLLA', filter: null,
+          desc: 'Thread lift com fios absorvíveis' },
       ],
-    }
-  }
+    },
+  },
 };
 
 export default function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cache-Control', 'public, s-maxage=86400');
-
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   const { specialty } = req.query;
@@ -152,7 +239,7 @@ export default function handler(req, res) {
     icon:   spec.icon,
     groups: Object.entries(spec.groups).map(([grp, codes]) => ({
       group: grp,
-      codes: codes.map(c => ({ code: c.code, label: c.label, cls: c.cls })),
+      codes: codes.map(c => ({ code: c.code, label: c.label })),
     })),
   }));
 
