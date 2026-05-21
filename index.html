@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedTech Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF;--bg2:#F7F6F3;--bg3:#F1EFE8;
+  --text:#1A1A18;--text2:#5C5C58;--text3:#9A9A95;
+  --bd:#E8E7E3;--bd2:#D0CFC9;--bd3:#B5B4AE;
+  --g-bg:#EAF3DE;--g-tx:#27500A;
+  --a-bg:#FAEEDA;--a-tx:#633806;
+  --gr-bg:#F1EFE8;--gr-tx:#444441;
+  --r-bg:#FCEBEB;--r-tx:#A32D2D;
+  --b-bg:#E6F1FB;--b-tx:#0C447C;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;font-size:13px;}
+input,select,button{font-family:'DM Mono',monospace;background:var(--bg);color:var(--text);border:0.5px solid var(--bd2);border-radius:3px;padding:7px 10px;font-size:11px;outline:none;}
+input:focus,select:focus{border-color:var(--bd3);}
+button{cursor:pointer;transition:all 0.1s;}
+button:hover:not(:disabled){background:var(--bg2);}
+button:disabled{opacity:0.4;cursor:default;}
+
+.wrap{max-width:1160px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+
+/* TOPBAR */
+.topbar{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:0.5px solid var(--bd);}
+.logo{font-family:'Fraunces',serif;font-size:22px;font-weight:300;letter-spacing:-0.02em;}
+.logo em{font-style:italic;}
+.topright{display:flex;align-items:center;gap:10px;}
+.vtag{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;padding:3px 8px;border:0.5px solid var(--bd);border-radius:3px;}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#639922;display:inline-block;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.live-label{font-size:10px;color:#639922;text-transform:uppercase;letter-spacing:0.08em;}
+
+/* ESPECIALIDADES */
+.spec-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:1.25rem;}
+.spec-card{border:0.5px solid var(--bd);border-radius:4px;padding:13px;cursor:pointer;transition:all 0.15s;}
+.spec-card:hover{border-color:var(--bd2);background:var(--bg2);}
+.spec-card.active{border-color:var(--bd3);background:var(--bg2);}
+.spec-icon{font-size:19px;margin-bottom:5px;}
+.spec-name{font-size:11px;font-weight:500;margin-bottom:2px;}
+.spec-sub{font-size:10px;color:var(--text3);line-height:1.4;}
+.spec-count{font-family:'Fraunces',serif;font-size:20px;font-weight:300;margin-top:8px;color:var(--text2);}
+
+/* SEARCH AREA */
+.search-area{background:var(--bg2);border:0.5px solid var(--bd);border-radius:4px;padding:14px;margin-bottom:1.25rem;}
+.search-row{display:grid;grid-template-columns:1fr 1.2fr auto auto;gap:8px;align-items:center;}
+.search-row select{font-size:11px;}
+.search-row input{font-size:11px;}
+.btn-search{background:var(--text);color:var(--bg);border-color:var(--text);font-size:10px;text-transform:uppercase;letter-spacing:0.05em;padding:0 18px;height:36px;}
+.btn-search:hover:not(:disabled){opacity:0.85;background:var(--text);}
+.btn-reset{font-size:10px;text-transform:uppercase;letter-spacing:0.05em;padding:0 12px;height:36px;}
+
+/* PROGRESS */
+.progress-wrap{height:2px;background:var(--bd);border-radius:2px;margin-top:10px;overflow:hidden;}
+.progress-bar{height:100%;background:var(--text);border-radius:2px;width:0%;transition:width 0.4s ease;}
+.status-line{font-size:10px;color:var(--text3);margin-top:6px;min-height:14px;}
+
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--bd);border:0.5px solid var(--bd);border-radius:4px;overflow:hidden;margin-bottom:1.25rem;}
+.metric{background:var(--bg);padding:10px 13px;}
+.ml{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:3px;}
+.mv{font-family:'Fraunces',serif;font-size:23px;font-weight:300;color:var(--text);line-height:1;}
+.ms{font-size:10px;color:var(--text3);margin-top:2px;}
+
+/* FILTERS */
+.fbar{display:flex;gap:5px;margin-bottom:1rem;flex-wrap:wrap;align-items:center;}
+.fl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-right:2px;}
+.chip{font-size:10px;padding:3px 9px;border-radius:2px;border:0.5px solid var(--bd2);background:transparent;color:var(--text2);cursor:pointer;transition:all 0.1s;white-space:nowrap;}
+.chip:hover{background:var(--bg2);}
+.chip.on{background:var(--text);color:var(--bg);border-color:var(--text);}
+
+/* TABLE */
+.th{display:grid;grid-template-columns:2.2fr 1fr 60px 55px 95px 115px 88px;gap:8px;padding:5px 11px;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;border-bottom:0.5px solid var(--bd);margin-bottom:3px;}
+.row{display:grid;grid-template-columns:2.2fr 1fr 60px 55px 95px 115px 88px;gap:8px;padding:9px 11px;border:0.5px solid var(--bd);border-radius:3px;margin-bottom:3px;cursor:pointer;transition:all 0.1s;background:var(--bg);align-items:start;}
+.row:hover{border-color:var(--bd2);background:var(--bg2);}
+.row.sel{border-color:var(--bd3);}
+.rd{font-size:11px;font-weight:500;line-height:1.4;}
+.rm{font-size:10px;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rc{font-size:10px;color:var(--text2);line-height:1.5;}
+.ryear{font-family:'Fraunces',serif;font-size:15px;font-weight:300;color:var(--text);}
+.new-badge{font-size:9px;background:#E8F5E2;color:#27500A;padding:1px 5px;border-radius:2px;display:inline-block;margin-top:2px;}
+
+/* TAGS */
+.tag{font-size:10px;padding:2px 6px;border-radius:2px;font-weight:500;display:inline-block;white-space:nowrap;}
+.t-op{background:var(--g-bg);color:var(--g-tx);}
+.t-ck{background:var(--a-bg);color:var(--a-tx);}
+.t-tk{background:var(--gr-bg);color:var(--gr-tx);}
+.t-c3{background:var(--r-bg);color:var(--r-tx);}
+.t-c2{background:var(--b-bg);color:var(--b-tx);}
+
+/* DETAIL PANEL */
+.dp{display:none;margin-bottom:3px;margin-top:-3px;border:0.5px solid var(--bd3);border-top:none;border-radius:0 0 3px 3px;padding:13px 11px;background:var(--bg2);}
+.dp.show{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;}
+.ds{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-bottom:5px;font-weight:500;}
+.df{margin-bottom:5px;}
+.dfl{font-size:10px;color:var(--text3);margin-bottom:1px;}
+.dfv{font-size:11px;color:var(--text);line-height:1.5;}
+.dact{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;}
+.abtn{font-size:9px;padding:4px 10px;cursor:pointer;border-radius:2px;text-transform:uppercase;letter-spacing:0.04em;white-space:nowrap;border:0.5px solid var(--bd2);}
+.a-pro{background:var(--text);color:var(--bg);border-color:var(--text);}
+.a-pro:hover{opacity:0.8;}
+.a-sec{background:transparent;color:var(--text2);}
+.a-sec:hover{background:var(--bg3);}
+
+/* STATE BOXES */
+.state-box{text-align:center;padding:3rem 1rem;color:var(--text3);font-size:12px;border:0.5px dashed var(--bd);border-radius:4px;}
+.state-box b{display:block;font-size:14px;font-weight:500;color:var(--text2);margin-bottom:8px;}
+.state-box code{font-size:10px;background:var(--bg2);padding:2px 8px;border-radius:2px;display:inline-block;margin-top:6px;}
+
+.rmeta{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.rcount{font-size:11px;color:var(--text3);}
+.ssort{font-size:10px;}
+
+/* LAST UPDATED */
+.last-updated{font-size:10px;color:var(--text3);margin-top:1rem;text-align:right;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="topbar">
+  <div class="logo">MedTech <em>Intelligence</em></div>
+  <div class="topright">
+    <span class="live-dot"></span>
+    <span class="live-label">FDA ao vivo</span>
+    <span class="vtag">openFDA 510k · PMA · MVP v1.0</span>
+  </div>
+</div>
+
+<!-- ESPECIALIDADES -->
+<div class="spec-grid" id="specGrid">
+  <div class="spec-card active" id="sp-neuro" onclick="selSpec('neuro')">
+    <div class="spec-icon">🧠</div>
+    <div class="spec-name">Neurocirurgia</div>
+    <div class="spec-sub">Shunts · Dural · DVE · Endoscopia</div>
+    <div class="spec-count" id="cnt-neuro">—</div>
+  </div>
+  <div class="spec-card" id="sp-ortho" onclick="selSpec('ortho')">
+    <div class="spec-icon">🦴</div>
+    <div class="spec-name">Ortopedia</div>
+    <div class="spec-sub">Próteses · Viscossuplem. · Robótica</div>
+    <div class="spec-count" id="cnt-ortho">—</div>
+  </div>
+  <div class="spec-card" id="sp-uro" onclick="selSpec('uro')">
+    <div class="spec-icon">🫀</div>
+    <div class="spec-name">Urologia</div>
+    <div class="spec-sub">Slings · Implantes · Ablação</div>
+    <div class="spec-count" id="cnt-uro">—</div>
+  </div>
+  <div class="spec-card" id="sp-derm" onclick="selSpec('derm')">
+    <div class="spec-icon">✨</div>
+    <div class="spec-name">Derm / Estética</div>
+    <div class="spec-sub">Preenchedores · Laser · Fios</div>
+    <div class="spec-count" id="cnt-derm">—</div>
+  </div>
+</div>
+
+<!-- BUSCA -->
+<div class="search-area">
+  <div class="search-row">
+    <select id="grpSel" onchange="onGroupChange()">
+      <option value="">— selecione o grupo —</option>
+    </select>
+    <select id="codeSel">
+      <option value="">— selecione o produto —</option>
+    </select>
+    <button class="btn-search" id="btnSearch" onclick="runSearch()">Buscar no FDA ↗</button>
+    <button class="btn-reset" onclick="resetAll()">Limpar</button>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="pb"></div></div>
+  <div class="status-line" id="statusLine">Selecione especialidade → grupo → produto → Buscar no FDA.</div>
+</div>
+
+<!-- MÉTRICAS -->
+<div class="metrics">
+  <div class="metric"><div class="ml">Total FDA</div><div class="mv" id="mT">—</div><div class="ms">registros</div></div>
+  <div class="metric"><div class="ml">Sem ANVISA</div><div class="mv" id="mO">—</div><div class="ms">oportunidades</div></div>
+  <div class="metric"><div class="ml">Recentes (&lt;24m)</div><div class="mv" id="mN">—</div><div class="ms">aprovados FDA</div></div>
+  <div class="metric"><div class="ml">Verificar</div><div class="mv" id="mC">—</div><div class="ms">ANVISA</div></div>
+  <div class="metric"><div class="ml">Países</div><div class="mv" id="mP">—</div><div class="ms">de origem</div></div>
+</div>
+
+<!-- FILTROS -->
+<div class="fbar">
+  <span class="fl">ANVISA:</span>
+  <span class="chip on" onclick="setF(this,'st','all')">Todos</span>
+  <span class="chip" onclick="setF(this,'st','open')">Sem registro</span>
+  <span class="chip" onclick="setF(this,'st','check')">Verificar</span>
+  <span class="fl" style="margin-left:6px">Região:</span>
+  <span class="chip on" onclick="setF(this,'rg','all')">Todos</span>
+  <span class="chip" onclick="setF(this,'rg','US')">EUA</span>
+  <span class="chip" onclick="setF(this,'rg','EU')">Europa</span>
+  <span class="chip" onclick="setF(this,'rg','AS')">Ásia</span>
+  <span class="fl" style="margin-left:6px">Aprovação:</span>
+  <span class="chip on" onclick="setF(this,'yr','all')">Todos os anos</span>
+  <span class="chip" onclick="setF(this,'yr','24m')">Últimos 24m</span>
+  <span class="chip" onclick="setF(this,'yr','12m')">Últimos 12m</span>
+  <span class="fl" style="margin-left:6px">Busca:</span>
+  <input type="text" id="qInput" placeholder="nome, fabricante..." oninput="applyFilters()" style="padding:3px 8px;height:26px;font-size:10px;flex:none;width:160px;">
+</div>
+
+<div class="rmeta">
+  <span class="rcount" id="rcnt">Aguardando busca.</span>
+  <select class="ssort" onchange="sortData(this.value)">
+    <option value="opp">ordenar: oportunidade (sem ANVISA primeiro)</option>
+    <option value="yr">ordenar: mais recente</option>
+    <option value="nm">ordenar: nome A-Z</option>
+    <option value="ct">ordenar: país</option>
+  </select>
+</div>
+
+<div class="th">
+  <div>Produto / Fabricante</div>
+  <div>País</div>
+  <div>Classe</div>
+  <div>Ano</div>
+  <div>Nº FDA</div>
+  <div>ANVISA</div>
+  <div>Ação</div>
+</div>
+
+<div id="list">
+  <div class="state-box">
+    <b>Dados em tempo real via FDA</b>
+    Selecione uma especialidade, escolha o tipo de produto e clique em <b>Buscar no FDA ↗</b><br>
+    Os dados são atualizados automaticamente toda semana conforme a FDA publica novos 510(k) e PMA.
+    <code>openFDA 510(k) + PMA API — atualização semanal</code>
+  </div>
+</div>
+
+<div class="last-updated" id="lastUpdated"></div>
+</div><!-- /wrap -->
+
+<script>
+// ── CATÁLOGO DE ESPECIALIDADES ────────────────────────────────────────────────
+// Espelha /api/codes.js — em produção poderia ser carregado dinamicamente
+const CATALOG = {
+  neuro: {
+    name:'Neurocirurgia', icon:'🧠',
+    groups: {
+      'Dural': [
+        {code:'NQR',label:'Selante Dural',desc:'Hidrogéis e selantes para fechamento dural (PMA Classe III)'},
+        {code:'KZE',label:'Substituto / Membrana Dural',desc:'Patches e matrizes para reparo dural'},
+      ],
+      'Válvulas / Shunt LCR': [
+        {code:'JXG',label:'Válvulas, Shunts e DVE',desc:'Válvulas hidrocefalia, DVE, reservatórios, cateteres'},
+      ],
+      'Cateteres': [
+        {code:'OEI',label:'Cateter Impregnado Antibiótico',desc:'Cateteres ventriculares com antibiótico ou prata'},
+      ],
+      'Neuroendoscopia': [
+        {code:'GZA',label:'Endoscópio Intraventricular',desc:'Sistemas neuroendoscópicos e neuronavegação'},
+      ],
+    }
+  },
+  ortho: {
+    name:'Ortopedia', icon:'🦴',
+    groups: {
+      'Viscossuplementação': [
+        {code:'MOZ',label:'HA Intra-articular',desc:'Todos os PMAs de viscossuplementação aprovados FDA'},
+      ],
+      'Próteses Articulares': [
+        {code:'JWH',label:'Prótese Joelho (cimentada)',desc:'TKA — artroplastia total de joelho cimentada'},
+        {code:'MBH',label:'Prótese Joelho (não-cimentada)',desc:'TKA — fixação biológica'},
+        {code:'LZO',label:'Prótese Quadril',desc:'THA — artroplastia total de quadril'},
+        {code:'PHX',label:'Prótese Ombro Reversa',desc:'Reverse shoulder arthroplasty'},
+      ],
+      'Robótica Ortopédica': [
+        {code:'OLO',label:'Sistema Robótico Ortopédico',desc:'Robôs cirúrgicos para joelho, quadril e coluna'},
+      ],
+      'Artroscopia': [
+        {code:'MAI',label:'Âncora Biodegradável',desc:'Âncoras absorvíveis para tecidos moles'},
+        {code:'MBI',label:'Âncora Não-degradável',desc:'Âncoras metálicas para artroscopia'},
+      ],
+      'Coluna Vertebral': [
+        {code:'MAX',label:'Fusão Lombar (PLIF/TLIF/LLIF)',desc:'Cages e implantes de fusão lombar'},
+        {code:'ODP',label:'Fusão Cervical (ACDF)',desc:'Cages e placas de fusão cervical'},
+      ],
+      'Enxertos / Bone Void': [
+        {code:'MQV',label:'Substituto Ósseo (TCP/HA)',desc:'Fillers ósseos de cálcio e bifásicos'},
+      ],
+    }
+  },
+  uro: {
+    name:'Urologia', icon:'🫀',
+    groups: {
+      'Incontinência': [
+        {code:'LYT',label:'Sling Uretral',desc:'Slings masculinos e femininos'},
+        {code:'FTO',label:'Esfíncter Urinário Artificial',desc:'AUS — artificial urinary sphincter'},
+      ],
+      'Disfunção Erétil': [
+        {code:'FTR',label:'Implante Peniano Inflável',desc:'Próteses penianas de 2 e 3 peças'},
+      ],
+      'Próstata': [
+        {code:'GEI',label:'Ablação de Próstata (UroLift/Rezum)',desc:'Sistemas minimamente invasivos para HPB'},
+      ],
+      'Stents': [
+        {code:'FRB',label:'Stent Ureteral',desc:'Stents ureterais simples e revestidos'},
+      ],
+    }
+  },
+  derm: {
+    name:'Derm / Estética', icon:'✨',
+    groups: {
+      'Preenchedores': [
+        {code:'LMH',label:'Preenchedor Dérmico HA',desc:'Fillers de ácido hialurônico (PMA Classe III)'},
+      ],
+      'Bioestimuladores': [
+        {code:'NWW',label:'Bioestimulador PLLA / CaHA',desc:'Sculptra, Radiesse e similares'},
+      ],
+      'Laser / Energia': [
+        {code:'GZU',label:'Laser Fracionado',desc:'Lasers ablativos e não-ablativos'},
+        {code:'IYO',label:'Radiofrequência (RF)',desc:'RF monopolar, bipolar e fracionada'},
+        {code:'QIH',label:'HIFU / Ultrassom Focado',desc:'Ultherapy, Sofwave e similares'},
+      ],
+      'Fios': [
+        {code:'OYK',label:'Fios de Sustentação PDO/PLLA',desc:'Thread lift com fios absorvíveis'},
+      ],
+    }
+  }
+};
+
+const EU_CC  = new Set(['DE','GB','FR','IT','NL','SE','IE','CH','ES','BE','DK','AT','PT','PL','FI','NO']);
+const ASIA_CC = new Set(['JP','KR','SG','IN','CN','TW','TH','MY','IL']);
+const CC_NAME = {US:'EUA',DE:'Alemanha',GB:'Reino Unido',FR:'França',JP:'Japão',KR:'Coreia do Sul',CA:'Canadá',AU:'Austrália',CH:'Suíça',IT:'Itália',NL:'Holanda',SE:'Suécia',IE:'Irlanda',IL:'Israel',SG:'Singapura',IN:'Índia',CN:'China',TW:'Taiwan',ES:'Espanha',BE:'Bélgica',DK:'Dinamarca',AT:'Áustria',PT:'Portugal',NO:'Noruega'};
+
+// ── ESTADO ────────────────────────────────────────────────────────────────────
+let rawData=[], filtered=[], selId=null, busy=false;
+let fSt='all', fRg='all', fYr='all', curSpec='neuro', curCode=null;
+const stOrder = {open:0, check:1, taken:2};
+
+// ── INICIALIZAÇÃO ─────────────────────────────────────────────────────────────
+function init() {
+  selSpec('neuro');
+}
+
+// ── SELECIONAR ESPECIALIDADE ──────────────────────────────────────────────────
+function selSpec(s) {
+  curSpec = s;
+  document.querySelectorAll('.spec-card').forEach(c => c.classList.remove('active'));
+  document.getElementById(`sp-${s}`).classList.add('active');
+
+  const spec = CATALOG[s];
+  const grpSel  = document.getElementById('grpSel');
+  const codeSel = document.getElementById('codeSel');
+
+  grpSel.innerHTML  = '<option value="">— selecione o grupo —</option>';
+  codeSel.innerHTML = '<option value="">— selecione o produto —</option>';
+
+  Object.keys(spec.groups).forEach(grp => {
+    const o = document.createElement('option');
+    o.value = grp; o.textContent = grp;
+    grpSel.appendChild(o);
+  });
+
+  rawData = []; filtered = []; selId = null; curCode = null;
+  resetMetrics();
+  document.getElementById('list').innerHTML = `
+    <div class="state-box">
+      <b>${spec.icon} ${spec.name}</b>
+      Selecione um grupo e tipo de produto, depois clique em <b>Buscar no FDA ↗</b>
+      <code>Dados atualizados diretamente da openFDA API</code>
+    </div>`;
+  document.getElementById('statusLine').textContent = `${spec.name} — escolha um grupo.`;
+}
+
+function onGroupChange() {
+  const grp     = document.getElementById('grpSel').value;
+  const codeSel = document.getElementById('codeSel');
+  codeSel.innerHTML = '<option value="">— selecione o produto —</option>';
+  if (!grp) return;
+
+  const codes = CATALOG[curSpec].groups[grp] || [];
+  codes.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c.code;
+    o.textContent = `${c.label} [${c.code}]`;
+    o.title = c.desc;
+    codeSel.appendChild(o);
+  });
+}
+
+// ── BUSCA REAL NA FDA ─────────────────────────────────────────────────────────
+async function runSearch() {
+  const code = document.getElementById('codeSel').value;
+  if (!code) { alert('Selecione um produto antes de buscar.'); return; }
+  if (busy) return;
+
+  busy = true;
+  curCode = code;
+  selId = null;
+
+  const setStatus = t => document.getElementById('statusLine').textContent = t;
+  const setPb     = w => document.getElementById('pb').style.width = w;
+
+  setPb('10%');
+  setStatus(`Consultando FDA 510(k) + PMA para código ${code}...`);
+  document.getElementById('btnSearch').disabled = true;
+  document.getElementById('list').innerHTML = `
+    <div class="state-box"><b>Buscando na FDA...</b>Consultando openFDA API em tempo real. Aguarde.</div>`;
+  resetMetrics();
+
+  try {
+    setPb('40%');
+    // Chama a Vercel Function — resolve CORS automaticamente
+    const resp = await fetch(`/api/search?code=${code}&limit=100`);
+    setPb('75%');
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({error: resp.statusText}));
+      throw new Error(err.error || `HTTP ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    setPb('90%');
+
+    rawData  = data.results || [];
+    filtered = [...rawData];
+
+    setStatus(`✓ ${rawData.length} registros FDA encontrados — ${data.opportunities} sem ANVISA identificado.`);
+    document.getElementById('lastUpdated').textContent =
+      `Dados obtidos em: ${new Date(data.fetched_at).toLocaleString('pt-BR')} · FDA atualiza semanalmente`;
+
+    // Atualiza contador da especialidade
+    document.getElementById(`cnt-${curSpec}`).textContent = rawData.length;
+
+    applyFilters();
+    setPb('0%');
+
+  } catch(err) {
+    setPb('0%');
+    setStatus(`Erro: ${err.message}`);
+    document.getElementById('list').innerHTML = `
+      <div class="state-box">
+        <b>Erro na busca</b>${err.message}<br><br>
+        Verifique se o servidor Vercel está ativo ou tente novamente.
+        <code>GET /api/search?code=${code}</code>
+      </div>`;
+  }
+
+  busy = false;
+  document.getElementById('btnSearch').disabled = false;
+}
+
+// ── FILTROS ───────────────────────────────────────────────────────────────────
+function setF(el, type, val) {
+  const groups = {st:[0,3], rg:[3,7], yr:[7,10]};
+  const [s,e]  = groups[type];
+  [...document.querySelectorAll('.fbar .chip')].slice(s,e).forEach(x => x.classList.remove('on'));
+  el.classList.add('on');
+  if(type==='st') fSt=val;
+  if(type==='rg') fRg=val;
+  if(type==='yr') fYr=val;
+  applyFilters();
+}
+
+function applyFilters() {
+  const q = (document.getElementById('qInput').value || '').toLowerCase();
+  const now = new Date();
+
+  filtered = rawData.filter(d => {
+    const mSt = fSt==='all' || d.anvisa_status===fSt;
+
+    const cc = (d.country_code||'US').toUpperCase();
+    const mRg = fRg==='all'
+      || (fRg==='US' && cc==='US')
+      || (fRg==='EU' && EU_CC.has(cc))
+      || (fRg==='AS' && ASIA_CC.has(cc));
+
+    const months = d.months_since ?? 9999;
+    const mYr = fYr==='all'
+      || (fYr==='24m' && months<=24)
+      || (fYr==='12m' && months<=12);
+
+    const mQ = !q
+      || (d.device_name||'').toLowerCase().includes(q)
+      || (d.applicant||'').toLowerCase().includes(q)
+      || (d.fda_number||'').toLowerCase().includes(q);
+
+    return mSt && mRg && mYr && mQ;
+  });
+
+  updateMetrics();
+  render();
+}
+
+function sortData(by) {
+  if(by==='opp') filtered.sort((a,b) =>
+    (stOrder[a.anvisa_status]||0) - (stOrder[b.anvisa_status]||0)
+    || (b.decision_date||'').localeCompare(a.decision_date||'')
+  );
+  else if(by==='yr') filtered.sort((a,b) => (b.decision_date||'').localeCompare(a.decision_date||''));
+  else if(by==='nm') filtered.sort((a,b) => (a.device_name||'').localeCompare(b.device_name||''));
+  else if(by==='ct') filtered.sort((a,b) => (a.country_code||'').localeCompare(b.country_code||''));
+  render();
+}
+
+function resetAll() {
+  document.getElementById('qInput').value = '';
+  document.getElementById('grpSel').value = '';
+  document.getElementById('codeSel').innerHTML = '<option value="">— selecione o produto —</option>';
+  fSt='all'; fRg='all'; fYr='all'; selId=null;
+  document.querySelectorAll('.fbar .chip').forEach((c,i) => {
+    c.classList.remove('on');
+    if([0,3,7].includes(i)) c.classList.add('on');
+  });
+  rawData=[]; filtered=[];
+  resetMetrics();
+  selSpec(curSpec);
+}
+
+// ── MÉTRICAS ──────────────────────────────────────────────────────────────────
+function resetMetrics() {
+  ['mT','mO','mN','mC','mP'].forEach(id => document.getElementById(id).textContent = '—');
+  document.getElementById('rcnt').textContent = 'Aguardando busca.';
+}
+
+function updateMetrics() {
+  document.getElementById('mT').textContent = filtered.length;
+  document.getElementById('mO').textContent = filtered.filter(d => d.anvisa_status==='open').length;
+  document.getElementById('mN').textContent = filtered.filter(d => (d.months_since??9999)<=24).length;
+  document.getElementById('mC').textContent = filtered.filter(d => d.anvisa_status==='check').length;
+  document.getElementById('mP').textContent = [...new Set(filtered.map(d => d.country_code).filter(Boolean))].length;
+  document.getElementById('rcnt').textContent =
+    `${filtered.length} produto${filtered.length!==1?'s':''} encontrado${filtered.length!==1?'s':''}`;
+}
+
+// ── TAGS ──────────────────────────────────────────────────────────────────────
+function stTag(s) {
+  if(s==='open')  return '<span class="tag t-op">Sem ANVISA</span>';
+  if(s==='check') return '<span class="tag t-ck">Verificar</span>';
+  return '<span class="tag t-tk">Registrado</span>';
+}
+function clsTag(c) {
+  return (c==='III'||c==='IIb')
+    ? `<span class="tag t-c3">${c}</span>`
+    : `<span class="tag t-c2">${c||'II'}</span>`;
+}
+function cname(cc) { return CC_NAME[cc] || cc || 'N/D'; }
+
+// ── RENDERIZAÇÃO ──────────────────────────────────────────────────────────────
+function render() {
+  const list = document.getElementById('list');
+  if(!filtered.length) {
+    list.innerHTML = '<div class="state-box"><b>Sem resultados</b>Ajuste os filtros ou faça nova busca.</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map((d, i) => `
+    <div class="row${selId===i?' sel':''}" onclick="tog(${i})">
+      <div>
+        <div class="rd">${d.device_name || '—'}</div>
+        <div class="rm">${d.applicant || '—'}</div>
+        ${d.is_opportunity ? '<span class="new-badge">⚡ Oportunidade &lt;24m</span>' : ''}
+      </div>
+      <div class="rc">${cname(d.country_code)}</div>
+      <div>${clsTag(d.device_class)}</div>
+      <div class="ryear">${d.year || '—'}</div>
+      <div class="rc" style="font-size:9px">${d.submission}<br>${d.fda_number||'—'}</div>
+      <div>${stTag(d.anvisa_status)}</div>
+      <div>
+        ${d.anvisa_status==='open'
+          ? `<button class="abtn a-pro" onclick="event.stopPropagation();pros(${i})">Prospectar ↗</button>`
+          : `<button class="abtn a-sec" onclick="event.stopPropagation();tog(${i})">Detalhar</button>`
+        }
+      </div>
+    </div>
+    <div class="dp${selId===i?' show':''}" id="dp${i}">
+      <div>
+        <div class="ds">Produto</div>
+        <div class="df"><div class="dfl">Nome</div><div class="dfv">${d.device_name||'—'}</div></div>
+        <div class="df"><div class="dfl">Número FDA</div><div class="dfv">${d.fda_number||'—'}</div></div>
+        <div class="df"><div class="dfl">Tipo</div><div class="dfv">${d.submission||'—'}</div></div>
+        <div class="df"><div class="dfl">Código produto</div><div class="dfv">${d.product_code||'—'}</div></div>
+        <div class="df"><div class="dfl">Classe</div><div class="dfv">${clsTag(d.device_class)}</div></div>
+        <div class="df"><div class="dfl">Data de aprovação</div><div class="dfv" style="font-family:'Fraunces',serif;font-size:16px;font-weight:300">${d.decision_date||'—'}</div></div>
+        <div class="df"><div class="dfl">Meses desde FDA</div><div class="dfv">${d.months_since!=null?d.months_since+'m':'—'}</div></div>
+      </div>
+      <div>
+        <div class="ds">ANVISA Brasil</div>
+        <div class="df"><div class="dfl">Status</div><div class="dfv">${stTag(d.anvisa_status)}</div></div>
+        <div class="df"><div class="dfl">Análise</div><div class="dfv">${d.anvisa_note||'—'}</div></div>
+        <div class="df"><div class="dfl">Oportunidade</div><div class="dfv">${
+          d.is_opportunity
+            ? '⚡ FDA aprovado há menos de 24 meses sem ANVISA — janela de primeira mover ainda aberta.'
+            : d.anvisa_status==='open'
+              ? 'FDA aprovado sem ANVISA identificado — candidato a prospecção e registro.'
+              : d.anvisa_status==='check'
+                ? 'Fabricante com presença no Brasil — verificar portfólio exato antes de abordar.'
+                : 'Mercado com cobertura no Brasil. Útil como referência regulatória.'
+        }</div></div>
+      </div>
+      <div>
+        <div class="ds">Fabricante</div>
+        <div class="df"><div class="dfl">Empresa</div><div class="dfv">${d.applicant||'—'}</div></div>
+        <div class="df"><div class="dfl">País</div><div class="dfv">${cname(d.country_code)}</div></div>
+        <div class="df"><div class="dfl">Código FDA</div><div class="dfv">${d.product_code||'—'}</div></div>
+        <div class="dact">
+          ${d.anvisa_status==='open'
+            ? `<button class="abtn a-pro" onclick="pros(${i})">Prospectar ↗</button>`
+            : ''
+          }
+          <button class="abtn a-sec" onclick="dive(${i})">Análise completa ↗</button>
+          ${d.anvisa_status==='check'
+            ? `<button class="abtn a-sec" onclick="verif(${i})">Verificar ANVISA ↗</button>`
+            : ''
+          }
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function tog(i) { selId = selId===i ? null : i; render(); }
+
+// ── AÇÕES (integra com Claude quando em chat) ─────────────────────────────────
+function pros(i) {
+  const d = filtered[i];
+  const msg = `Quero prospectar o fabricante "${d.applicant}" do dispositivo "${d.device_name}" `
+    + `(${d.submission} ${d.fda_number}, ${cname(d.country_code)}, Classe ${d.device_class}, `
+    + `aprovado ${d.decision_date}, ${d.months_since}m atrás). `
+    + `Produto aprovado FDA sem ANVISA identificado. Me ajude com: `
+    + `1) contatos comerciais diretos / LinkedIn BD `
+    + `2) estratégia de abordagem para representação exclusiva no Brasil `
+    + `3) rota regulatória ANVISA (classe, prazo, custo estimado) `
+    + `4) argumentos comerciais para a negociação `
+    + `5) próximos passos concretos.`;
+  if(typeof sendPrompt==='function') sendPrompt(msg);
+  else { navigator.clipboard?.writeText(msg); alert('Prompt copiado para a área de transferência.'); }
+}
+
+function dive(i) {
+  const d = filtered[i];
+  const msg = `Análise completa de "${d.device_name}" (${d.applicant}, ${cname(d.country_code)}, `
+    + `${d.submission} ${d.fda_number}, aprovado ${d.decision_date}): `
+    + `1) volume estimado de procedimentos/ano no Brasil `
+    + `2) concorrentes com ANVISA ativo `
+    + `3) rota de registro ANVISA mais eficiente `
+    + `4) perfil do comprador (hospitais, clínicas, SUS vs privado) `
+    + `5) recomendação estratégica — vale prospectar?`;
+  if(typeof sendPrompt==='function') sendPrompt(msg);
+  else { navigator.clipboard?.writeText(msg); alert('Prompt copiado.'); }
+}
+
+function verif(i) {
+  const d = filtered[i];
+  const msg = `Verificar ANVISA: fabricante "${d.applicant}", produto "${d.device_name}" `
+    + `(${d.submission} ${d.fda_number}). Busque no ANVISA e Smerp: `
+    + `1) número de registro se existir `
+    + `2) detentor e distribuidor no Brasil `
+    + `3) produto sendo comercializado ativamente?`;
+  if(typeof sendPrompt==='function') sendPrompt(msg);
+  else { navigator.clipboard?.writeText(msg); alert('Prompt copiado.'); }
+}
+
+init();
+</script>
+</body>
+</html>
