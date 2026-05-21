@@ -2,8 +2,15 @@
  * /api/search?code=NQR&limit=100&type=all
  *
  * Proxy openFDA API — resolve CORS.
- * Deduplicação por número de submissão (pma_number / k_number),
- * mantendo apenas o registro mais recente de cada produto.
+ *
+ * LÓGICA DE DEDUPLICAÇÃO:
+ * PMAs da FDA registram cada suplemento (update, label change, etc.)
+ * como linha separada com o mesmo número P mas data diferente.
+ * → Deduplicamos por pma_number mantendo a data MAIS ANTIGA = aprovação original.
+ * → O ano exibido é o ano real de aprovação do produto no mercado.
+ *
+ * Para calcular "oportunidade <24m" usamos a data ORIGINAL,
+ * não a data de suplementos recentes.
  */
 
 const FDA_BASE = 'https://api.fda.gov/device';
@@ -17,13 +24,13 @@ const BR_SUBSIDIARIES = new Set([
 ]);
 
 const CORP_SUFFIXES = [
-  /\bInc\.?\b/gi, /\bLtd\.?\b/gi, /\bLLC\b/gi, /\bCorp\.?\b/gi,
-  /\bGmbH\b/gi, /\bAG\b/gi, /\bBV\b/gi, /\bSA\b/gi, /\bSRL\b/gi,
-  /\bSpA\b/gi, /\bKG\b/gi, /\bPLC\b/gi, /\bGroup\b/gi,
-  /\bHoldings?\b/gi, /\bInternational\b/gi, /\bMedical\b/gi,
-  /\bHealthcare\b/gi, /\bTherapeutics?\b/gi, /\bBiotech\b/gi,
-  /\bSurgical\b/gi, /\bOrthopedics?\b/gi, /\bBiosciences?\b/gi,
-  /\bUSA\b/gi, /\bBrasil\b/gi, /\bAmerica\b/gi,
+  /\bInc\.?\b/gi,/\bLtd\.?\b/gi,/\bLLC\b/gi,/\bCorp\.?\b/gi,
+  /\bGmbH\b/gi,/\bAG\b/gi,/\bBV\b/gi,/\bSA\b/gi,/\bSRL\b/gi,
+  /\bSpA\b/gi,/\bKG\b/gi,/\bPLC\b/gi,/\bGroup\b/gi,
+  /\bHoldings?\b/gi,/\bInternational\b/gi,/\bMedical\b/gi,
+  /\bHealthcare\b/gi,/\bTherapeutics?\b/gi,/\bBiotech\b/gi,
+  /\bSurgical\b/gi,/\bOrthopedics?\b/gi,/\bBiosciences?\b/gi,
+  /\bUSA\b/gi,/\bBrasil\b/gi,/\bAmerica\b/gi,
 ];
 
 function normalizeBrand(applicant = '') {
@@ -47,20 +54,20 @@ function anvisaStatus(applicant = '') {
   return { status: 'open', label: 'Sem ANVISA', note: 'Sem registro ANVISA identificado — candidato a prospecção.' };
 }
 
-function parseDecisionDate(raw = '') {
+function parseDate(raw = '') {
   if (!raw || raw.length < 8) return { date: null, year: null };
-  const clean = raw.replace(/-/g, '');
+  const c = raw.replace(/-/g, '');
   return {
-    date: `${clean.substring(0,4)}-${clean.substring(4,6)}-${clean.substring(6,8)}`,
-    year: clean.substring(0, 4),
+    date: `${c.slice(0,4)}-${c.slice(4,6)}-${c.slice(6,8)}`,
+    year: c.slice(0, 4),
   };
 }
 
 function monthsSince(dateStr = '') {
   if (!dateStr) return null;
-  const d   = new Date(dateStr);
-  const now = new Date();
-  return (now.getFullYear() - d.getFullYear()) * 12 + (now.getMonth() - d.getMonth());
+  const d = new Date(dateStr);
+  const n = new Date();
+  return (n.getFullYear() - d.getFullYear()) * 12 + (n.getMonth() - d.getMonth());
 }
 
 async function fetchFDA(endpoint, params) {
@@ -77,16 +84,10 @@ async function fetchFDA(endpoint, params) {
 }
 
 /**
- * DEDUPLICAÇÃO INTELIGENTE:
- * PMA: cada produto tem um número base (P220014).
- *   A FDA registra suplementos (updates, changes) como linhas separadas
- *   com o mesmo número mas datas diferentes.
- *   → Deduplicamos por pma_number, mantendo apenas o registro mais recente.
- *
- * 510(k): cada produto tem um número único (K231234).
- *   Não há suplementos no banco 510k — duplicatas são raras mas podem
- *   ocorrer por erro de indexação.
- *   → Deduplicamos por k_number.
+ * Deduplicação PMA:
+ * - Agrupa por pma_number
+ * - Mantém a data MAIS ANTIGA (aprovação original)
+ * - Mantém o nome e applicant do registro original
  */
 function deduplicatePMA(rows) {
   const map = new Map();
@@ -95,9 +96,9 @@ function deduplicatePMA(rows) {
     if (!map.has(key)) {
       map.set(key, r);
     } else {
-      // Manter o registro com decision_date mais recente
+      // Manter o registro com decision_date MAIS ANTIGA = aprovação original
       const existing = map.get(key);
-      if ((r.decision_date || '') > (existing.decision_date || '')) {
+      if ((r.decision_date || '99999999') < (existing.decision_date || '99999999')) {
         map.set(key, r);
       }
     }
@@ -105,6 +106,11 @@ function deduplicatePMA(rows) {
   return Array.from(map.values());
 }
 
+/**
+ * Deduplicação 510(k):
+ * - Cada k_number é único por design — sem suplementos
+ * - Deduplicamos apenas por segurança contra indexação dupla
+ */
 function deduplicate510k(rows) {
   const seen = new Set();
   return rows.filter(r => {
@@ -122,8 +128,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { code, limit = '100', skip = '0', type = 'all', sort = 'decision_date:desc' } = req.query;
-
+  const { code, limit = '100', skip = '0', type = 'all' } = req.query;
   if (!code) return res.status(400).json({ error: 'Parâmetro "code" obrigatório. Ex: ?code=NQR' });
 
   const productCode = code.toUpperCase().trim();
@@ -135,16 +140,14 @@ export default async function handler(req, res) {
 
     // ── 510(k) ──────────────────────────────────────────────────────────────
     if (type === 'all' || type === '510k') {
-      const { results: raw510 } = await fetchFDA('510k', {
+      const { results: raw } = await fetchFDA('510k', {
         search: `product_code:${productCode}`,
-        limit: lim, skip: sk, sort,
+        limit: lim, skip: sk,
+        sort: 'decision_date:desc',
       });
 
-      // Deduplicar por k_number
-      const deduped = deduplicate510k(raw510);
-
-      for (const r of deduped) {
-        const { date, year } = parseDecisionDate(r.decision_date);
+      for (const r of deduplicate510k(raw)) {
+        const { date, year } = parseDate(r.decision_date);
         const anvisa = anvisaStatus(r.applicant);
         const months = monthsSince(date);
         results.push({
@@ -161,6 +164,7 @@ export default async function handler(req, res) {
           anvisa_status: anvisa.status,
           anvisa_label:  anvisa.label,
           anvisa_note:   anvisa.note,
+          // Oportunidade: aprovado há <24 meses e sem ANVISA
           is_opportunity: anvisa.status === 'open' && months !== null && months <= 24,
         });
       }
@@ -168,18 +172,17 @@ export default async function handler(req, res) {
 
     // ── PMA ─────────────────────────────────────────────────────────────────
     if (type === 'all' || type === 'pma') {
-      // Buscar com limit maior para garantir que pegamos todos os suplementos
-      // antes de deduplicar (assim temos a versão mais recente de cada produto)
-      const { results: rawPMA } = await fetchFDA('pma', {
+      // Buscar com sort ASC para que o registro mais antigo (original) venha primeiro
+      // Isso facilita a deduplicação — o primeiro registro de cada P-number é o original
+      const { results: raw } = await fetchFDA('pma', {
         search: `product_code:${productCode}`,
-        limit: 100, sort,
+        limit: 100,
+        sort: 'decision_date:asc',  // ASC = mais antigo primeiro = aprovação original
       });
 
-      // Deduplicar por pma_number — mantém só o mais recente de cada produto
-      const deduped = deduplicatePMA(rawPMA);
-
-      for (const r of deduped) {
-        const { date, year } = parseDecisionDate(r.decision_date);
+      // Deduplicar mantendo o mais antigo = aprovação original
+      for (const r of deduplicatePMA(raw)) {
+        const { date, year } = parseDate(r.decision_date);
         const anvisa = anvisaStatus(r.applicant);
         const months = monthsSince(date);
         results.push({
@@ -201,21 +204,21 @@ export default async function handler(req, res) {
       }
     }
 
-    // Ordenar: sem ANVISA primeiro, depois mais recente
+    // Ordenar: oportunidades primeiro, depois mais recente
     results.sort((a, b) => {
-      const stOrder = { open: 0, check: 1, taken: 2 };
-      const diff = (stOrder[a.anvisa_status] || 0) - (stOrder[b.anvisa_status] || 0);
-      if (diff !== 0) return diff;
+      const stO = { open: 0, check: 1, taken: 2 };
+      const d = (stO[a.anvisa_status] || 0) - (stO[b.anvisa_status] || 0);
+      if (d !== 0) return d;
       return (b.decision_date || '').localeCompare(a.decision_date || '');
     });
 
     return res.status(200).json({
-      ok:           true,
-      product_code: productCode,
-      total:        results.length,
+      ok:            true,
+      product_code:  productCode,
+      total:         results.length,
       opportunities: results.filter(r => r.is_opportunity).length,
       results,
-      fetched_at:   new Date().toISOString(),
+      fetched_at:    new Date().toISOString(),
     });
 
   } catch (err) {
