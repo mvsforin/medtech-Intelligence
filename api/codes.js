@@ -1,9 +1,11 @@
 /**
  * /api/codes
+ * Catálogo de especialidades e códigos FDA verificados.
+ * Códigos confirmados diretamente na openFDA API por produto referência.
  *
- * Retorna o catálogo de especialidades e códigos FDA mapeados.
- * O front consome isso para montar os dropdowns dinamicamente.
- * Ao adicionar um novo código aqui, ele aparece automaticamente no front.
+ * GXQ = Dura, Substitute/Regeneration Matrix (DuraGen, Integra) ✓ VERIFICADO
+ * NQR = Sealant, Dural (DuraSeal, CraniSeal) ✓ VERIFICADO
+ * KZE = Injector, Jet, Hypodermic — ERRADO para dural, removido
  */
 
 export const CATALOG = {
@@ -14,8 +16,8 @@ export const CATALOG = {
       'Dural': [
         { code: 'NQR', label: 'Selante Dural', submission: ['PMA'], cls: 'III',
           description: 'Hidrogéis e selantes para fechamento watertight da dura-máter' },
-        { code: 'KZE', label: 'Substituto / Membrana Dural', submission: ['510k'], cls: 'II-III',
-          description: 'Patches, membranas e matrizes para reparo dural' },
+        { code: 'GXQ', label: 'Substituto / Membrana Dural', submission: ['510k'], cls: 'II',
+          description: 'Matrizes de regeneração dural — DuraGen (Integra), colágeno e similares' },
       ],
       'Válvulas / Shunt LCR': [
         { code: 'JXG', label: 'Válvulas e Shunts Hidrocefalia', submission: ['510k'], cls: 'II',
@@ -25,13 +27,13 @@ export const CATALOG = {
         { code: 'JXG', label: 'Drenagem Ventricular Externa (DVE)', submission: ['510k'], cls: 'II',
           description: 'Sistemas de drenagem externa de LCR e cateteres EVD' },
       ],
-      'Cateteres Impreg.': [
+      'Cateteres': [
         { code: 'OEI', label: 'Cateter Impregnado Antibiótico', submission: ['510k'], cls: 'II',
           description: 'Cateteres ventriculares impregnados com antibiótico ou prata' },
       ],
       'Neuroendoscopia': [
         { code: 'GZA', label: 'Endoscópio Intraventricular', submission: ['510k'], cls: 'II',
-          description: 'Sistemas neuroendoscópicos para ventriculoscopia e neuronavegação' },
+          description: 'Sistemas neuroendoscópicos e neuronavegação' },
       ],
     },
   },
@@ -41,44 +43,40 @@ export const CATALOG = {
     icon: '🦴',
     groups: {
       'Viscossuplementação': [
-        { code: 'MOZ', label: 'Ácido Hialurônico Intra-articular', submission: ['PMA'], cls: 'III',
-          description: 'Viscossuplementação articular — todos os PMAs aprovados FDA' },
+        { code: 'MOZ', label: 'HA Intra-articular', submission: ['PMA'], cls: 'III',
+          description: 'Todos os PMAs de viscossuplementação aprovados FDA' },
       ],
       'Próteses Articulares': [
-        { code: 'JWH', label: 'Prótese de Joelho (cimentada)', submission: ['510k'], cls: 'II',
-          description: 'Sistemas de artroplastia total de joelho cimentados' },
-        { code: 'MBH', label: 'Prótese de Joelho (não-cimentada)', submission: ['510k'], cls: 'II',
-          description: 'Sistemas de artroplastia total de joelho com fixação biológica' },
-        { code: 'LZO', label: 'Prótese de Quadril', submission: ['510k'], cls: 'II',
-          description: 'Sistemas de artroplastia total de quadril' },
-        { code: 'PHX', label: 'Prótese de Ombro Reversa', submission: ['510k'], cls: 'II',
-          description: 'Sistemas de ombro reverso e anatomico' },
+        { code: 'JWH', label: 'Prótese Joelho (cimentada)', submission: ['510k'], cls: 'II',
+          description: 'TKA — artroplastia total de joelho cimentada' },
+        { code: 'MBH', label: 'Prótese Joelho (não-cimentada)', submission: ['510k'], cls: 'II',
+          description: 'TKA — fixação biológica' },
+        { code: 'LZO', label: 'Prótese Quadril', submission: ['510k'], cls: 'II',
+          description: 'THA — artroplastia total de quadril' },
+        { code: 'PHX', label: 'Prótese Ombro Reversa', submission: ['510k'], cls: 'II',
+          description: 'Reverse shoulder arthroplasty' },
       ],
       'Robótica Ortopédica': [
         { code: 'OLO', label: 'Sistema Robótico Ortopédico', submission: ['510k'], cls: 'II',
-          description: 'Robôs cirúrgicos e sistemas de navegação para artroplastia' },
+          description: 'Robôs cirúrgicos para joelho, quadril e coluna' },
       ],
       'Artroscopia': [
         { code: 'MAI', label: 'Âncora Biodegradável', submission: ['510k'], cls: 'II',
-          description: 'Âncoras absorvíveis para reparo de tecidos moles' },
+          description: 'Âncoras absorvíveis para tecidos moles' },
         { code: 'MBI', label: 'Âncora Não-degradável', submission: ['510k'], cls: 'II',
-          description: 'Âncoras metálicas e de titânio para artroscopia' },
+          description: 'Âncoras metálicas para artroscopia' },
       ],
       'Coluna Vertebral': [
-        { code: 'MAX', label: 'Fusão Lombar Intervertebral', submission: ['510k'], cls: 'II',
-          description: 'Cages e implantes de fusão lombar (PLIF/TLIF/LLIF)' },
-        { code: 'ODP', label: 'Fusão Cervical Intervertebral', submission: ['510k'], cls: 'II',
-          description: 'Cages e placas de fusão cervical (ACDF)' },
+        { code: 'MAX', label: 'Fusão Lombar (PLIF/TLIF/LLIF)', submission: ['510k'], cls: 'II',
+          description: 'Cages e implantes de fusão lombar' },
+        { code: 'ODP', label: 'Fusão Cervical (ACDF)', submission: ['510k'], cls: 'II',
+          description: 'Cages e placas de fusão cervical' },
       ],
       'Enxertos / Bone Void': [
-        { code: 'MQV', label: 'Substituto Ósseo (Cálcio)', submission: ['510k'], cls: 'II',
-          description: 'Fillers ósseos de TCP, HA e bifásico' },
+        { code: 'MQV', label: 'Substituto Ósseo (TCP/HA)', submission: ['510k'], cls: 'II',
+          description: 'Fillers ósseos de cálcio e bifásicos' },
       ],
-      'Biológicos': [
-        { code: 'LGX', label: 'Fat Grafting / MFAT', submission: ['510k'], cls: 'II',
-          description: 'Sistemas de processamento de tecido adiposo' },
-      ],
-    },
+    }
   },
 
   uro: {
@@ -96,62 +94,58 @@ export const CATALOG = {
           description: 'Próteses penianas de 2 e 3 peças' },
       ],
       'Próstata': [
-        { code: 'GEI', label: 'Ablação de Próstata', submission: ['510k', 'PMA'], cls: 'III',
-          description: 'UroLift, Rezum, Aquablation e similares' },
+        { code: 'GEI', label: 'Ablação de Próstata (UroLift/Rezum)', submission: ['510k', 'PMA'], cls: 'III',
+          description: 'Sistemas minimamente invasivos para HPB' },
       ],
-      'Stents / Cateteres': [
+      'Stents': [
         { code: 'FRB', label: 'Stent Ureteral', submission: ['510k'], cls: 'II',
           description: 'Stents ureterais simples e revestidos' },
       ],
-    },
+    }
   },
 
   derm: {
-    name: 'Dermatologia / Estética',
+    name: 'Derm / Estética',
     icon: '✨',
     groups: {
       'Preenchedores': [
         { code: 'LMH', label: 'Preenchedor Dérmico HA', submission: ['PMA'], cls: 'III',
-          description: 'Fillers de ácido hialurônico para uso facial' },
+          description: 'Fillers de ácido hialurônico (PMA Classe III)' },
       ],
       'Bioestimuladores': [
-        { code: 'NWW', label: 'Bioestimulador (PLLA/CaHA)', submission: ['PMA'], cls: 'III',
-          description: 'Sculptra (PLLA), Radiesse (CaHA) e similares' },
+        { code: 'NWW', label: 'Bioestimulador PLLA / CaHA', submission: ['PMA'], cls: 'III',
+          description: 'Sculptra, Radiesse e similares' },
       ],
       'Laser / Energia': [
         { code: 'GZU', label: 'Laser Fracionado', submission: ['510k'], cls: 'II',
-          description: 'Lasers ablativos e não-ablativos fracionados' },
+          description: 'Lasers ablativos e não-ablativos' },
         { code: 'IYO', label: 'Radiofrequência (RF)', submission: ['510k'], cls: 'II',
           description: 'RF monopolar, bipolar e fracionada' },
         { code: 'QIH', label: 'HIFU / Ultrassom Focado', submission: ['510k'], cls: 'II',
           description: 'Ultherapy, Sofwave e similares' },
       ],
-      'Fios de Sustentação': [
-        { code: 'OYK', label: 'Fios PDO / PLLA', submission: ['510k'], cls: 'II',
+      'Fios': [
+        { code: 'OYK', label: 'Fios de Sustentação PDO/PLLA', submission: ['510k'], cls: 'II',
           description: 'Thread lift com fios absorvíveis' },
       ],
-    },
-  },
+    }
+  }
 };
 
 export default function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Cache-Control', 'public, s-maxage=86400'); // cache 24h
+  res.setHeader('Cache-Control', 'public, s-maxage=86400');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  // Retorna catálogo completo ou filtrado por especialidade
   const { specialty } = req.query;
 
   if (specialty) {
     const data = CATALOG[specialty.toLowerCase()];
-    if (!data) {
-      return res.status(404).json({ error: `Especialidade "${specialty}" não encontrada` });
-    }
+    if (!data) return res.status(404).json({ error: `Especialidade "${specialty}" não encontrada` });
     return res.status(200).json({ ok: true, specialty: data });
   }
 
-  // Retorna sumário de todas as especialidades
   const summary = Object.entries(CATALOG).map(([key, spec]) => ({
     key,
     name:   spec.name,
