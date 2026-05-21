@@ -244,18 +244,29 @@ const CATALOG = {
   neuro: {
     name:'Neurocirurgia', icon:'🧠',
     groups: {
+      'Hidrocefalia — Válvulas': [
+        {code:'JXG',label:'Válvulas Programáveis',desc:'Válvulas ajustáveis por imã externo — Miethke, Sophysa, Medtronic Strata',filter:'programmable'},
+        {code:'JXG',label:'Válvulas de Pressão Fixa',desc:'Válvulas com pressão diferencial fixada na fabricação',filter:'fixed'},
+        {code:'JXG',label:'Shunts VP / VA Completos',desc:'Sistemas completos de shunt ventriculoperitoneal e ventriculoatrial',filter:'shunt'},
+        {code:'JXG',label:'Shunts Lomboperitoneal (LP)',desc:'Shunts LP para hidrocefalia comunicante e hipertensão intracraniana idiopática',filter:'lumboperitoneal'},
+      ],
+      'DVE — Drenagem Ventricular Externa': [
+        {code:'JXG',label:'DVE Padrão (sem antibiótico)',desc:'Sistemas de drenagem ventricular externa — silicone e polissulfona',filter:'EVD drain'},
+        {code:'JXG',label:'DVE com Antibiótico Impregnado',desc:'Cateteres EVD com rifampicina/clindamicina — Bactiseal e similares',filter:'bactiseal antibiotic'},
+        {code:'JXG',label:'DVE com Prata (antimicrobiano)',desc:'Cateteres com nanopartículas de prata — Spiegelberg Silverline',filter:'silver antimicrobial'},
+      ],
+      'Reservatórios': [
+        {code:'JXG',label:'Reservatórios Ommaya / Rickham',desc:'Reservatórios burr-hole para quimioterapia intratecal e acesso ventricular',filter:'reservoir'},
+      ],
       'Dural': [
-        {code:'NQR',label:'Selante Dural',desc:'Hidrogéis e selantes para fechamento dural (PMA Classe III)'},
-        {code:'GXQ',label:'Substituto / Membrana Dural',desc:'Matrizes de regeneração dural — DuraGen (Integra), colágeno e similares'},
+        {code:'NQR',label:'Selante Dural',desc:'Hidrogéis e selantes para fechamento dural (PMA Classe III)',filter:null},
+        {code:'GXQ',label:'Substituto / Membrana Dural',desc:'Matrizes de regeneração dural — DuraGen (Integra), colágeno e similares',filter:null},
       ],
-      'Válvulas / Shunt LCR': [
-        {code:'JXG',label:'Válvulas, Shunts e DVE',desc:'Válvulas hidrocefalia, DVE, reservatórios, cateteres'},
-      ],
-      'Cateteres': [
-        {code:'OEI',label:'Cateter Impregnado Antibiótico',desc:'Cateteres ventriculares com antibiótico ou prata'},
+      'Monitorização de PIC': [
+        {code:'GWM',label:'Monitor de Pressão Intracraniana',desc:'Sensores e sistemas de PIC — Codman, Camino, Pressio 3, Neurovent, Spiegelberg',filter:null},
       ],
       'Neuroendoscopia': [
-        {code:'GZA',label:'Endoscópio Intraventricular',desc:'Sistemas neuroendoscópicos e neuronavegação'},
+        {code:'GWG',label:'Neuroendoscópio / Ventriculoscópio',desc:'Endoscópios intraventriculares para ETV, cistos e tumores — Aesculap, Karl Storz',filter:null},
       ],
     }
   },
@@ -263,27 +274,27 @@ const CATALOG = {
     name:'Ortopedia', icon:'🦴',
     groups: {
       'Viscossuplementação': [
-        {code:'MOZ',label:'HA Intra-articular',desc:'Todos os PMAs de viscossuplementação aprovados FDA'},
+        {code:'MOZ',label:'HA Intra-articular',desc:'Todos os PMAs de viscossuplementação aprovados FDA',filter:null},
       ],
       'Próteses Articulares': [
-        {code:'JWH',label:'Prótese Joelho (cimentada)',desc:'TKA — artroplastia total de joelho cimentada'},
-        {code:'MBH',label:'Prótese Joelho (não-cimentada)',desc:'TKA — fixação biológica'},
-        {code:'LZO',label:'Prótese Quadril',desc:'THA — artroplastia total de quadril'},
-        {code:'PHX',label:'Prótese Ombro Reversa',desc:'Reverse shoulder arthroplasty'},
+        {code:'JWH',label:'Prótese Joelho (cimentada)',desc:'TKA — artroplastia total de joelho cimentada',filter:null},
+        {code:'MBH',label:'Prótese Joelho (não-cimentada)',desc:'TKA — fixação biológica',filter:null},
+        {code:'LZO',label:'Prótese Quadril',desc:'THA — artroplastia total de quadril',filter:null},
+        {code:'PHX',label:'Prótese Ombro Reversa',desc:'Reverse shoulder arthroplasty',filter:null},
       ],
       'Robótica Ortopédica': [
-        {code:'OLO',label:'Sistema Robótico Ortopédico',desc:'Robôs cirúrgicos para joelho, quadril e coluna'},
+        {code:'OLO',label:'Sistema Robótico Ortopédico',desc:'Robôs cirúrgicos para joelho, quadril e coluna',filter:null},
       ],
       'Artroscopia': [
-        {code:'MAI',label:'Âncora Biodegradável',desc:'Âncoras absorvíveis para tecidos moles'},
-        {code:'MBI',label:'Âncora Não-degradável',desc:'Âncoras metálicas para artroscopia'},
+        {code:'MAI',label:'Âncora Biodegradável',desc:'Âncoras absorvíveis para tecidos moles',filter:null},
+        {code:'MBI',label:'Âncora Não-degradável',desc:'Âncoras metálicas para artroscopia',filter:null},
       ],
       'Coluna Vertebral': [
-        {code:'MAX',label:'Fusão Lombar (PLIF/TLIF/LLIF)',desc:'Cages e implantes de fusão lombar'},
-        {code:'ODP',label:'Fusão Cervical (ACDF)',desc:'Cages e placas de fusão cervical'},
+        {code:'MAX',label:'Fusão Lombar (PLIF/TLIF/LLIF)',desc:'Cages e implantes de fusão lombar',filter:null},
+        {code:'ODP',label:'Fusão Cervical (ACDF)',desc:'Cages e placas de fusão cervical',filter:null},
       ],
       'Enxertos / Bone Void': [
-        {code:'MQV',label:'Substituto Ósseo (TCP/HA)',desc:'Fillers ósseos de cálcio e bifásicos'},
+        {code:'MQV',label:'Substituto Ósseo (TCP/HA)',desc:'Fillers ósseos de cálcio e bifásicos',filter:null},
       ],
     }
   },
@@ -291,17 +302,17 @@ const CATALOG = {
     name:'Urologia', icon:'🫀',
     groups: {
       'Incontinência': [
-        {code:'LYT',label:'Sling Uretral',desc:'Slings masculinos e femininos'},
-        {code:'FTO',label:'Esfíncter Urinário Artificial',desc:'AUS — artificial urinary sphincter'},
+        {code:'LYT',label:'Sling Uretral',desc:'Slings masculinos e femininos para incontinência urinária',filter:null},
+        {code:'FTO',label:'Esfíncter Urinário Artificial',desc:'AUS — artificial urinary sphincter',filter:null},
       ],
       'Disfunção Erétil': [
-        {code:'FTR',label:'Implante Peniano Inflável',desc:'Próteses penianas de 2 e 3 peças'},
+        {code:'FTR',label:'Implante Peniano Inflável',desc:'Próteses penianas de 2 e 3 peças',filter:null},
       ],
       'Próstata': [
-        {code:'GEI',label:'Ablação de Próstata (UroLift/Rezum)',desc:'Sistemas minimamente invasivos para HPB'},
+        {code:'GEI',label:'Ablação de Próstata',desc:'UroLift, Rezum, Aquablation e similares',filter:null},
       ],
       'Stents': [
-        {code:'FRB',label:'Stent Ureteral',desc:'Stents ureterais simples e revestidos'},
+        {code:'FRB',label:'Stent Ureteral',desc:'Stents ureterais simples e revestidos',filter:null},
       ],
     }
   },
@@ -309,18 +320,18 @@ const CATALOG = {
     name:'Derm / Estética', icon:'✨',
     groups: {
       'Preenchedores': [
-        {code:'LMH',label:'Preenchedor Dérmico HA',desc:'Fillers de ácido hialurônico (PMA Classe III)'},
+        {code:'LMH',label:'Preenchedor Dérmico HA',desc:'Fillers de ácido hialurônico (PMA Classe III)',filter:null},
       ],
       'Bioestimuladores': [
-        {code:'NWW',label:'Bioestimulador PLLA / CaHA',desc:'Sculptra, Radiesse e similares'},
+        {code:'NWW',label:'Bioestimulador PLLA / CaHA',desc:'Sculptra, Radiesse e similares',filter:null},
       ],
       'Laser / Energia': [
-        {code:'GZU',label:'Laser Fracionado',desc:'Lasers ablativos e não-ablativos'},
-        {code:'IYO',label:'Radiofrequência (RF)',desc:'RF monopolar, bipolar e fracionada'},
-        {code:'QIH',label:'HIFU / Ultrassom Focado',desc:'Ultherapy, Sofwave e similares'},
+        {code:'GZU',label:'Laser Fracionado',desc:'Lasers ablativos e não-ablativos',filter:null},
+        {code:'IYO',label:'Radiofrequência (RF)',desc:'RF monopolar, bipolar e fracionada',filter:null},
+        {code:'QIH',label:'HIFU / Ultrassom Focado',desc:'Ultherapy, Sofwave e similares',filter:null},
       ],
       'Fios': [
-        {code:'OYK',label:'Fios de Sustentação PDO/PLLA',desc:'Thread lift com fios absorvíveis'},
+        {code:'OYK',label:'Fios de Sustentação PDO/PLLA',desc:'Thread lift com fios absorvíveis',filter:null},
       ],
     }
   }
