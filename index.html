@@ -241,13 +241,17 @@ button:disabled{opacity:0.4;cursor:default;}
 // ── CATÁLOGO DE ESPECIALIDADES ────────────────────────────────────────────────
 // Espelha /api/codes.js — em produção poderia ser carregado dinamicamente
 const CATALOG = {
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // NEUROCIRURGIA
+  // ══════════════════════════════════════════════════════════════════════════
   neuro: {
     name:'Neurocirurgia', icon:'🧠',
     groups: {
       'Hidrocefalia — Válvulas': [
         {code:'JXG',label:'Válvulas Programáveis',desc:'Válvulas ajustáveis por imã externo — Miethke, Sophysa, Medtronic Strata',filter:'programmable'},
         {code:'JXG',label:'Válvulas de Pressão Fixa',desc:'Válvulas com pressão diferencial fixada na fabricação',filter:'fixed'},
-        {code:'JXG',label:'Shunts VP / VA Completos',desc:'Sistemas completos de shunt ventriculoperitoneal e ventriculoatrial',filter:'shunt'},
+        {code:'JXG',label:'Shunts VP / VA Completos',desc:'Sistemas completos ventriculoperitoneal e ventriculoatrial',filter:'shunt'},
         {code:'JXG',label:'Shunts Lomboperitoneal (LP)',desc:'Shunts LP para hidrocefalia comunicante e hipertensão intracraniana idiopática',filter:'lumboperitoneal'},
       ],
       'DVE — Drenagem Ventricular Externa': [
@@ -259,8 +263,8 @@ const CATALOG = {
         {code:'JXG',label:'Reservatórios Ommaya / Rickham',desc:'Reservatórios burr-hole para quimioterapia intratecal e acesso ventricular',filter:'reservoir'},
       ],
       'Dural': [
-        {code:'NQR',label:'Selante Dural',desc:'Hidrogéis e selantes para fechamento dural (PMA Classe III)',filter:null},
-        {code:'GXQ',label:'Substituto / Membrana Dural',desc:'Matrizes de regeneração dural — DuraGen (Integra), colágeno e similares',filter:null},
+        {code:'NQR',label:'Selante Dural',desc:'Hidrogéis e selantes para fechamento watertight da dura-máter (PMA Classe III)',filter:null},
+        {code:'GXQ',label:'Substituto / Membrana Dural',desc:'Matrizes de regeneração dural — DuraGen (Integra), colágeno e derivados',filter:null},
       ],
       'Monitorização de PIC': [
         {code:'GWM',label:'Monitor de Pressão Intracraniana',desc:'Sensores e sistemas de PIC — Codman, Camino, Pressio 3, Neurovent, Spiegelberg',filter:null},
@@ -270,34 +274,96 @@ const CATALOG = {
       ],
     }
   },
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // ORTOPEDIA — 7 subespecialidades, 17 códigos FDA verificados
+  // ══════════════════════════════════════════════════════════════════════════
   ortho: {
     name:'Ortopedia', icon:'🦴',
     groups: {
+
+      // ── 1. VISCOSSUPLEMENTAÇÃO ──────────────────────────────────────────
+      // MOZ = Acid, Hyaluronic, Intraarticular — 312 PMAs Classe III
       'Viscossuplementação': [
-        {code:'MOZ',label:'HA Intra-articular',desc:'Todos os PMAs de viscossuplementação aprovados FDA',filter:null},
+        {code:'MOZ',label:'HA Intra-articular (dose única)',desc:'PMAs dose única — Durolane, Monovisc, Gel-One, Synvisc-One',filter:null},
+        {code:'MOZ',label:'HA Intra-articular (múltiplas doses)',desc:'PMAs múltiplas doses — Hyalgan, Orthovisc, Supartz FX, Euflexxa',filter:null},
       ],
-      'Próteses Articulares': [
-        {code:'JWH',label:'Prótese Joelho (cimentada)',desc:'TKA — artroplastia total de joelho cimentada',filter:null},
-        {code:'MBH',label:'Prótese Joelho (não-cimentada)',desc:'TKA — fixação biológica',filter:null},
-        {code:'LZO',label:'Prótese Quadril',desc:'THA — artroplastia total de quadril',filter:null},
-        {code:'PHX',label:'Prótese Ombro Reversa',desc:'Reverse shoulder arthroplasty',filter:null},
+
+      // ── 2. ARTROPLASTIA ─────────────────────────────────────────────────
+      // JWH = Prosthesis, Knee (cimentada) — 911 registros
+      // MBH = Prosthesis, Knee (não-cimentada) — 142 registros
+      // LZO = Prosthesis, Hip — 530 registros
+      // PHX = Shoulder Prosthesis, Reverse — 201 registros
+      // PKC = Shoulder Prosthesis, Anatomic — 19 registros
+      // ETB = Ankle Prosthesis — 74 registros
+      'Artroplastia — Joelho': [
+        {code:'JWH',label:'Prótese de Joelho Cimentada',desc:'TKA cimentada — sistemas convencionais e de revisão',filter:null},
+        {code:'MBH',label:'Prótese de Joelho Não-cimentada',desc:'TKA com fixação biológica — superfícies porosas e trabeculadas',filter:null},
       ],
-      'Robótica Ortopédica': [
-        {code:'OLO',label:'Sistema Robótico Ortopédico',desc:'Robôs cirúrgicos para joelho, quadril e coluna',filter:null},
+      'Artroplastia — Quadril': [
+        {code:'LZO',label:'Prótese de Quadril (THA)',desc:'THA — hastes femorais, copas acetabulares, cabeças e insertos',filter:null},
       ],
+      'Artroplastia — Ombro': [
+        {code:'PHX',label:'Prótese de Ombro Reversa',desc:'Reverse TSA — DeltaMotion, Equinoxe, Blueprint, Medacta AMIS',filter:null},
+        {code:'PKC',label:'Prótese de Ombro Anatômica',desc:'TSA anatômica — resurface e stemless shoulder',filter:null},
+      ],
+      'Artroplastia — Tornozelo': [
+        {code:'ETB',label:'Prótese Total de Tornozelo',desc:'TAA — INFINITY, STAR, HINTEGRA, Zenith, VANTAGE',filter:null},
+      ],
+
+      // ── 3. ARTROSCOPIA ──────────────────────────────────────────────────
+      // MBI = Fastener, Non-degradable Soft Tissue — 593 registros
+      // MAI = Fastener, Biodegradable Soft Tissue — 219 registros
       'Artroscopia': [
-        {code:'MAI',label:'Âncora Biodegradável',desc:'Âncoras absorvíveis para tecidos moles',filter:null},
-        {code:'MBI',label:'Âncora Não-degradável',desc:'Âncoras metálicas para artroscopia',filter:null},
+        {code:'MBI',label:'Âncora Metálica / PEEK',desc:'Âncoras não-degradáveis para reparo do manguito, labrum, Bankart',filter:null},
+        {code:'MAI',label:'Âncora Biodegradável / Biocompósita',desc:'Âncoras absorvíveis PLLA, PGA, biocompósito — FiberTak, SwiveLock',filter:null},
       ],
-      'Coluna Vertebral': [
-        {code:'MAX',label:'Fusão Lombar (PLIF/TLIF/LLIF)',desc:'Cages e implantes de fusão lombar',filter:null},
-        {code:'ODP',label:'Fusão Cervical (ACDF)',desc:'Cages e placas de fusão cervical',filter:null},
+
+      // ── 4. COLUNA VERTEBRAL ─────────────────────────────────────────────
+      // NKB = Screw, Bone (pedicle/pedicular) — 899 registros
+      // MAX = Intervertebral Fusion, Lumbar — 888 registros
+      // ODP = Intervertebral Fusion, Cervical — 349 registros
+      // KWQ = Plate, Fixation, Spinal — 666 registros
+      'Coluna — Fixação': [
+        {code:'NKB',label:'Sistema de Parafuso Pedicular',desc:'Fixação posterior — parafusos pediculares torácicos e lombares',filter:null},
+        {code:'KWQ',label:'Placa de Fixação Cervical',desc:'Placas ACDF, ACCF — fixação anterior de coluna cervical',filter:null},
       ],
-      'Enxertos / Bone Void': [
-        {code:'MQV',label:'Substituto Ósseo (TCP/HA)',desc:'Fillers ósseos de cálcio e bifásicos',filter:null},
+      'Coluna — Cages / Fusão': [
+        {code:'MAX',label:'Cage de Fusão Lombar (PLIF/TLIF/LLIF)',desc:'Implantes de fusão intersomática lombar — expandíveis e impressos 3D',filter:null},
+        {code:'ODP',label:'Cage de Fusão Cervical (ACDF)',desc:'Implantes de fusão cervical anterior — cages com e sem placa integrada',filter:null},
       ],
+
+      // ── 5. TRAUMA ───────────────────────────────────────────────────────
+      // HWC = Fixation Device, Intramedullary — 1.057 registros (maior da ortopedia)
+      // KTT = Fixator, External, Orthopaedic — 403 registros
+      'Trauma — Fixação Interna': [
+        {code:'HWC',label:'Haste Intramedular',desc:'Hastes femorais, tibiais, umerais — trauma de ossos longos',filter:null},
+        {code:'HWC',label:'Placa e Parafusos (ORIF)',desc:'Sistemas de placa para fixação de fraturas — extremidades e periarticulares',filter:null},
+      ],
+      'Trauma — Fixação Externa': [
+        {code:'KTT',label:'Fixador Externo',desc:'Fixadores externos uniplanares, circulares (Ilizarov) e híbridos',filter:null},
+      ],
+
+      // ── 6. SUBSTITUTOS ÓSSEOS ───────────────────────────────────────────
+      // MQV = Filler, Bone Void — 490 registros
+      'Substitutos Ósseos': [
+        {code:'MQV',label:'Bone Void Filler (TCP / HA)',desc:'Substitutos ósseos cálcio — TCP, HA bifásico, CaSO4 — Cerament, Actifuse',filter:null},
+        {code:'MQV',label:'Enxerto Ósseo Sintético Injetável',desc:'Cimentos e pastas injetáveis para preenchimento de cavidades ósseas',filter:null},
+      ],
+
+      // ── 7. ROBÓTICA ORTOPÉDICA ──────────────────────────────────────────
+      // OLO = Orthopedic Stereotaxic Instrument — 424 registros
+      'Robótica Ortopédica': [
+        {code:'OLO',label:'Sistema Robótico para Artroplastia',desc:'Robôs para joelho e quadril — MAKO, ROSA, CORI, VELYS, ExcelsiusFlex',filter:null},
+        {code:'OLO',label:'Navegação Cirúrgica Ortopédica',desc:'Sistemas de navegação por imagem para artroplastia e coluna',filter:null},
+      ],
+
     }
   },
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // UROLOGIA
+  // ══════════════════════════════════════════════════════════════════════════
   uro: {
     name:'Urologia', icon:'🫀',
     groups: {
@@ -316,6 +382,10 @@ const CATALOG = {
       ],
     }
   },
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // DERMATOLOGIA / ESTÉTICA
+  // ══════════════════════════════════════════════════════════════════════════
   derm: {
     name:'Derm / Estética', icon:'✨',
     groups: {
@@ -335,6 +405,7 @@ const CATALOG = {
       ],
     }
   }
+
 };
 
 const EU_CC  = new Set(['DE','GB','FR','IT','NL','SE','IE','CH','ES','BE','DK','AT','PT','PL','FI','NO']);
