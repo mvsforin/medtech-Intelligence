@@ -497,12 +497,12 @@ const CATALOG = {
 
       // ── INJETÁVEIS ──────────────────────────────────────────────────────
       // LMH = Filler, Dermal — 1.035 PMAs Classe III
-      // NWW = Stimulator, Tissue (PLLA, CaHA) — PMA
-      'Injetáveis — Preenchedores': [
-        {code:'LMH',label:'Preenchedor Dérmico (HA)',desc:'Fillers de ácido hialurônico — Juvederm, Restylane, Teosyal, Versa (PMA Classe III)',filter:null},
+      // Radiesse (LMH P050037) e Sculptra (LMH P030050) — verificados na FDA
+      'Injetáveis — Preenchedores (HA)': [
+        {code:'LMH',label:'Preenchedor Dérmico (HA)',desc:'Fillers ácido hialurônico — Juvederm, Restylane, Teosyal, Versa, Belotero (PMA Classe III)',filter:null},
       ],
-      'Injetáveis — Bioestimuladores': [
-        {code:'NWW',label:'Bioestimulador PLLA / CaHA',desc:'Sculptra (PLLA), Radiesse (CaHA) e similares — estimulação de colágeno',filter:null},
+      'Injetáveis — Bioestimuladores (CaHA / PLLA)': [
+        {code:'LMH',label:'Bioestimulador CaHA / PLLA (Radiesse / Sculptra)',desc:'Radiesse (CaHA, Merz) e Sculptra (PLLA, Galderma) — FDA classifica no mesmo código LMH que os HAs. Filtrar por fabricante para diferenciar.',filter:null},
       ],
 
       // ── RF / ENERGIA ─────────────────────────────────────────────────────
