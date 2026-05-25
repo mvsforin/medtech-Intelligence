@@ -390,20 +390,61 @@ const CATALOG = {
   derm: {
     name:'Derm / Estética', icon:'✨',
     groups: {
-      'Preenchedores': [
-        {code:'LMH',label:'Preenchedor Dérmico HA',desc:'Fillers de ácido hialurônico (PMA Classe III)',filter:null},
+
+      // ── INJETÁVEIS ──────────────────────────────────────────────────────
+      // LMH = Filler, Dermal — 1.035 PMAs Classe III
+      // NWW = Stimulator, Tissue (PLLA, CaHA) — PMA
+      'Injetáveis — Preenchedores': [
+        {code:'LMH',label:'Preenchedor Dérmico (HA)',desc:'Fillers de ácido hialurônico — Juvederm, Restylane, Teosyal, Versa (PMA Classe III)',filter:null},
       ],
-      'Bioestimuladores': [
-        {code:'NWW',label:'Bioestimulador PLLA / CaHA',desc:'Sculptra, Radiesse e similares',filter:null},
+      'Injetáveis — Bioestimuladores': [
+        {code:'NWW',label:'Bioestimulador PLLA / CaHA',desc:'Sculptra (PLLA), Radiesse (CaHA) e similares — estimulação de colágeno',filter:null},
       ],
-      'Laser / Energia': [
-        {code:'GZU',label:'Laser Fracionado',desc:'Lasers ablativos e não-ablativos',filter:null},
-        {code:'IYO',label:'Radiofrequência (RF)',desc:'RF monopolar, bipolar e fracionada',filter:null},
-        {code:'QIH',label:'HIFU / Ultrassom Focado',desc:'Ultherapy, Sofwave e similares',filter:null},
+
+      // ── RF / ENERGIA ─────────────────────────────────────────────────────
+      // GEI = Electrosurgical Unit + RF devices — 2.296 registros (Morpheus8, Potenza)
+      // IYO = Radiofrequency device — 892 registros
+      // QIH = HIFU — 292 registros
+      // OOK = Cryolipolysis — 14 registros
+      // QPB = Body contouring — 57 registros
+      'RF Microneedling': [
+        {code:'GEI',label:'RF Microneedling (Morpheus8 / Potenza)',desc:'Radiofrequência fracionada com microagulhas — InMode Morpheus8, Synermed Potenza, Genius RF',filter:null},
       ],
-      'Fios': [
-        {code:'OYK',label:'Fios de Sustentação PDO/PLLA',desc:'Thread lift com fios absorvíveis',filter:null},
+      'Radiofrequência Facial / Corporal': [
+        {code:'IYO',label:'RF Facial e Corporal',desc:'RF monopolar e multipolar para flacidez e remodelamento — Thermage, Exilis, Accent',filter:null},
       ],
+      'HIFU / Ultrassom Focado': [
+        {code:'QIH',label:'HIFU Facial (Ultherapy / Sofwave)',desc:'Ultrassom microfocado para lifting não-invasivo — Ultherapy, Sofwave, Ultraformer',filter:null},
+      ],
+      'Criolipolise': [
+        {code:'OOK',label:'Criolipolise (CoolSculpting)',desc:'Criolipolise para redução de gordura localizada — CoolSculpting/Zeltiq e similares',filter:null},
+      ],
+      'Body Contouring': [
+        {code:'QPB',label:'Body Contouring (EMS / RF / Aspiração)',desc:'Remodelamento corporal por EMS, RF e aspiração — AYON, PAL System e similares',filter:null},
+      ],
+
+      // ── LASER ─────────────────────────────────────────────────────────────
+      // GEX = Laser multi-tecnologia — 2.861 registros (CO2, Nd:YAG, Pico, Q-switched)
+      // GZU = Laser fracionado — ablativo e não-ablativo
+      // QAI = Microneedling puro (SkinPen) — 26 registros
+      'Laser — Multi-tecnologia': [
+        {code:'GEX',label:'Laser CO2 / Nd:YAG / Pico / Q-switched',desc:'Plataformas laser multimodais — rejuvenescimento, manchas, tatuagem, vascular',filter:null},
+      ],
+      'Laser — Fracionado': [
+        {code:'GZU',label:'Laser Fracionado (ablativo / não-ablativo)',desc:'Fraxel, HALO, Lumenis e similares — ressurfacing e rejuvenescimento',filter:null},
+      ],
+      'Microagulhamento': [
+        {code:'QAI',label:'Microagulhamento (SkinPen / Dermapen)',desc:'Indução percutânea de colágeno — SkinPen Precision, Dermapen e similares',filter:null},
+      ],
+
+      // ── FIOS DE SUSTENTAÇÃO ───────────────────────────────────────────────
+      // NEW = Sutura PDO (Miracu, Pinion, V-soft) — 62 registros
+      // GAM = Fios com cones (Silhouette InstaLift) — código específico
+      'Fios de Sustentação': [
+        {code:'NEW',label:'Fios PDO (Mono / Espiral / Liso)',desc:'Suturas polidioxanona para sustentação facial — Miracu, Pinion PDO, V-soft Line',filter:null},
+        {code:'GAM',label:'Fios com Cones (Silhouette InstaLift)',desc:'Fios de sustentação com cones bidirecionais — Silhouette InstaLift, Featherlift',filter:null},
+      ],
+
     }
   }
 
