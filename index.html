@@ -45,7 +45,10 @@ button:disabled{opacity:0.4;cursor:default;}
 .spec-icon{font-size:19px;margin-bottom:5px;}
 .spec-name{font-size:11px;font-weight:500;margin-bottom:2px;}
 .spec-sub{font-size:10px;color:var(--text3);line-height:1.4;}
-.spec-count{font-family:'Fraunces',serif;font-size:20px;font-weight:300;margin-top:8px;color:var(--text2);}
+.spec-count{margin-top:8px;display:flex;gap:10px;align-items:baseline;}
+.spec-count .sc-total{font-family:'Fraunces',serif;font-size:20px;font-weight:300;color:var(--text2);}
+.spec-count .sc-open{font-family:'Fraunces',serif;font-size:13px;font-weight:300;color:var(--g-tx);background:var(--g-bg);padding:1px 6px;border-radius:2px;}
+.spec-count.loading{opacity:0.4;}
 
 /* SEARCH AREA */
 .search-area{background:var(--bg2);border:0.5px solid var(--bd);border-radius:4px;padding:14px;margin-bottom:1.25rem;}
@@ -139,25 +142,37 @@ button:disabled{opacity:0.4;cursor:default;}
     <div class="spec-icon">🧠</div>
     <div class="spec-name">Neurocirurgia</div>
     <div class="spec-sub">Shunts · Dural · DVE · Endoscopia</div>
-    <div class="spec-count" id="cnt-neuro">—</div>
+    <div class="spec-count loading" id="cnt-neuro">
+      <span class="sc-total" id="cnt-neuro-total">—</span>
+      <span class="sc-open" id="cnt-neuro-open">— sem ANVISA</span>
+    </div>
   </div>
   <div class="spec-card" id="sp-ortho" onclick="selSpec('ortho')">
     <div class="spec-icon">🦴</div>
     <div class="spec-name">Ortopedia</div>
     <div class="spec-sub">Próteses · Viscossuplem. · Robótica</div>
-    <div class="spec-count" id="cnt-ortho">—</div>
+    <div class="spec-count loading" id="cnt-ortho">
+      <span class="sc-total" id="cnt-ortho-total">—</span>
+      <span class="sc-open" id="cnt-ortho-open">— sem ANVISA</span>
+    </div>
   </div>
   <div class="spec-card" id="sp-uro" onclick="selSpec('uro')">
-    <div class="spec-icon">🫀</div>
+    <div class="spec-icon">🍌</div>
     <div class="spec-name">Urologia</div>
-    <div class="spec-sub">Slings · Implantes · Ablação</div>
-    <div class="spec-count" id="cnt-uro">—</div>
+    <div class="spec-sub">Incontinência · HPB · Endoscopia · Litíase</div>
+    <div class="spec-count loading" id="cnt-uro">
+      <span class="sc-total" id="cnt-uro-total">—</span>
+      <span class="sc-open" id="cnt-uro-open">— sem ANVISA</span>
+    </div>
   </div>
   <div class="spec-card" id="sp-derm" onclick="selSpec('derm')">
     <div class="spec-icon">✨</div>
     <div class="spec-name">Derm / Estética</div>
     <div class="spec-sub">Preenchedores · Laser · Fios</div>
-    <div class="spec-count" id="cnt-derm">—</div>
+    <div class="spec-count loading" id="cnt-derm">
+      <span class="sc-total" id="cnt-derm-total">—</span>
+      <span class="sc-open" id="cnt-derm-open">— sem ANVISA</span>
+    </div>
   </div>
 </div>
 
@@ -551,9 +566,64 @@ const stOrder = {open:0, check:1, taken:2};
 // ── INICIALIZAÇÃO ─────────────────────────────────────────────────────────────
 function init() {
   selSpec('neuro');
+
+  // Pré-carregar totais de todas as especialidades em background
+  ['neuro','ortho','uro','derm'].forEach(s => {
+    const cntEl = document.getElementById(`cnt-${s}`);
+    if (cntEl) cntEl.classList.add('loading');
+    loadSpecTotals(s).then(({ total, open }) => {
+      setSpecCount(s, total, open);
+    });
+  });
 }
 
 // ── SELECIONAR ESPECIALIDADE ──────────────────────────────────────────────────
+// Cache de totais por especialidade (evita rebuscar)
+const _specCache = {};
+
+async function loadSpecTotals(s) {
+  if (_specCache[s]) return _specCache[s];
+
+  const spec = CATALOG[s];
+  const allCodes = [...new Set(
+    Object.values(spec.groups).flat().map(c => c.code)
+  )];
+
+  // Buscar todos os códigos em paralelo
+  const results = await Promise.all(
+    allCodes.map(code =>
+      fetch(`/api/search?code=${code}`, {cache:'force-cache'})
+        .then(r => r.json())
+        .catch(() => ({ total: 0, opportunities: 0 }))
+    )
+  );
+
+  // Agregar totais — deduplicar produtos que aparecem em múltiplos grupos
+  const seen = new Set();
+  let total = 0, open = 0;
+  results.forEach(d => {
+    (d.results || []).forEach(r => {
+      if (!seen.has(r.fda_number)) {
+        seen.add(r.fda_number);
+        total++;
+        if (r.anvisa_status === 'open') open++;
+      }
+    });
+  });
+
+  _specCache[s] = { total, open };
+  return { total, open };
+}
+
+function setSpecCount(s, total, open) {
+  const el = document.getElementById(`cnt-${s}`);
+  if (el) {
+    el.classList.remove('loading');
+    document.getElementById(`cnt-${s}-total`).textContent = total.toLocaleString('pt-BR');
+    document.getElementById(`cnt-${s}-open`).textContent = `${open} sem ANVISA`;
+  }
+}
+
 function selSpec(s) {
   curSpec = s;
   document.querySelectorAll('.spec-card').forEach(c => c.classList.remove('active'));
@@ -574,6 +644,23 @@ function selSpec(s) {
 
   rawData = []; filtered = []; selId = null; curCode = null;
   resetMetrics();
+
+  // Carregar totais da especialidade (mostra no card)
+  const cntEl = document.getElementById(`cnt-${s}`);
+  if (cntEl) cntEl.classList.add('loading');
+
+  loadSpecTotals(s).then(({ total, open }) => {
+    setSpecCount(s, total, open);
+  });
+
+  // Mostrar métricas no painel imediatamente se já tiver cache
+  if (_specCache[s]) {
+    document.getElementById('mT').textContent = _specCache[s].total.toLocaleString('pt-BR');
+    document.getElementById('mO').textContent = _specCache[s].open;
+    document.getElementById('rcnt').textContent =
+      `${spec.name} — ${_specCache[s].total.toLocaleString('pt-BR')} produtos · ${_specCache[s].open} sem ANVISA`;
+  }
+
   document.getElementById('list').innerHTML = `
     <div class="state-box">
       <b>${spec.icon} ${spec.name}</b>
