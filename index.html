@@ -141,7 +141,7 @@ button:disabled{opacity:0.4;cursor:default;}
   <div class="spec-card active" id="sp-neuro" onclick="selSpec('neuro')">
     <div class="spec-icon">🧠</div>
     <div class="spec-name">Neurocirurgia</div>
-    <div class="spec-sub">Shunts · Dural · DVE · Endoscopia</div>
+    <div class="spec-sub">Shunts · Dural · DVE · SCS · Coluna</div>
     <div class="spec-count loading" id="cnt-neuro">
       <span class="sc-total" id="cnt-neuro-total">—</span>
       <span class="sc-open" id="cnt-neuro-open">— sem ANVISA</span>
@@ -183,15 +183,7 @@ button:disabled{opacity:0.4;cursor:default;}
       <span class="sc-open" id="cnt-oftalmo-open">— sem ANVISA</span>
     </div>
   </div>
-  <div class="spec-card" id="sp-spine" onclick="selSpec('spine')">
-    <div class="spec-icon">🧬</div>
-    <div class="spec-name">Neurocirurgia Coluna</div>
-    <div class="spec-sub">SCS · Fusão · Disco Artificial</div>
-    <div class="spec-count loading" id="cnt-spine">
-      <span class="sc-total" id="cnt-spine-total">—</span>
-      <span class="sc-open" id="cnt-spine-open">— sem ANVISA</span>
-    </div>
-  </div>
+
   <div class="spec-card" id="sp-plastica" onclick="selSpec('plastica')">
     <div class="spec-icon">🩹</div>
     <div class="spec-name">Cirurgia Plástica</div>
@@ -313,6 +305,23 @@ const CATALOG = {
       ],
       'Neuroendoscopia': [
         {code:'GWG',label:'Neuroendoscópio / Ventriculoscópio',desc:'Endoscópios intraventriculares para ETV, cistos e tumores — Aesculap, Karl Storz',filter:null},
+      ],
+
+      // ── COLUNA — incorporado em Neurocirurgia ────────────────────────────
+      'Coluna — Neuromodulação (SCS)': [
+        {code:'LGW',label:'Estimulador Medular (SCS)',desc:'Spinal cord stimulation para dor crônica — Intellis, Vanta RC (Medtronic), Spectra (BSc), Prodigy (Abbott), Prospera (Biotronik) — PMA',filter:null},
+      ],
+      'Coluna — Cirurgia MIS': [
+        {code:'MAX',label:'Cage Lombar MIS (TLIF/LLIF percutâneo)',desc:'Implantes de fusão lombar minimamente invasivos — expandíveis e impressos em titânio 3D',filter:null},
+        {code:'NKB',label:'Parafuso Pedicular Percutâneo',desc:'Fixação pedicular percutânea para cirurgia MIS de coluna',filter:null},
+      ],
+      'Coluna — Fusão Cervical': [
+        {code:'ODP',label:'Cage Cervical (ACDF / ACCF)',desc:'Fusão cervical anterior — cages standalone, com placa integrada, expandíveis',filter:null},
+        {code:'KWQ',label:'Placa de Fixação Cervical',desc:'Placas cervicais anteriores para fixação e fusão cervical',filter:null},
+      ],
+      'Coluna — Disco Artificial': [
+        {code:'MAX',label:'Disco Artificial Lombar (ADR)',desc:'Artroplastia discal lombar — substituição do disco intervertebral',filter:null},
+        {code:'ODP',label:'Disco Artificial Cervical (CDR)',desc:'Artroplastia discal cervical — PRESTIGE LP (Medtronic), MOBI-C (Zimmer), Prodisc-C',filter:null},
       ],
     }
   },
@@ -607,28 +616,7 @@ const CATALOG = {
         {code:'LZP',label:'Dispositivo Viscoelástico (OVD)',desc:'Viscoelásticos cirúrgicos — Provisc, Viscoat, Healon, DuoVisc (Alcon, PMA)',filter:null},
       ],
     }
-  },
-
-  spine: {
-    name:'Neurocirurgia Coluna', icon:'🦴',
-    groups: {
-      'Neuromodulação — SCS': [
-        {code:'LGW',label:'Estimulador Medular (SCS)',desc:'Spinal cord stimulation para dor crônica — Intellis, Vanta RC (Medtronic), Spectra (BSc), Prodigy (Abbott), Prospera (Biotronik) — PMA',filter:null},
-      ],
-      'Cirurgia MIS — Coluna': [
-        {code:'MAX',label:'Cage Lombar MIS (TLIF/LLIF percutâneo)',desc:'Implantes de fusão lombar minimamente invasivos — expandíveis e impressos em titânio 3D',filter:null},
-        {code:'NKB',label:'Parafuso Pedicular Percutâneo',desc:'Fixação pedicular percutânea para cirurgia MIS de coluna',filter:null},
-      ],
-      'Fusão Cervical': [
-        {code:'ODP',label:'Cage Cervical (ACDF / ACCF)',desc:'Fusão cervical anterior — cages standalone, com placa integrada, expandíveis',filter:null},
-        {code:'KWQ',label:'Placa de Fixação Cervical',desc:'Placas cervicais anteriores para fixação e fusão cervical',filter:null},
-      ],
-      'Disco Artificial': [
-        {code:'MAX',label:'Disco Artificial Lombar (ADR)',desc:'Artroplastia discal lombar — substituição do disco intervertebral',filter:null},
-        {code:'ODP',label:'Disco Artificial Cervical (CDR)',desc:'Artroplastia discal cervical — PRESTIGE LP (Medtronic), MOBI-C (Zimmer), Prodisc-C',filter:null},
-      ],
-    }
-  },
+  }
 
   plastica: {
     name:'Cirurgia Plástica', icon:'🩹',
@@ -671,7 +659,7 @@ function init() {
   selSpec('neuro');
 
   // Pré-carregar totais de todas as especialidades em background
-  ['neuro','ortho','uro','derm','oftalmo','spine','plastica'].forEach(s => {
+  ['neuro','ortho','uro','derm','oftalmo','plastica'].forEach(s => {
     const cntEl = document.getElementById(`cnt-${s}`);
     if (cntEl) cntEl.classList.add('loading');
     loadSpecTotals(s).then(({ total, open }) => {
