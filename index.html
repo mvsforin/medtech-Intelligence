@@ -370,52 +370,104 @@ const CATALOG = {
     groups: {
 
       // ── INCONTINÊNCIA ────────────────────────────────────────────────────
-      // OTM = Male Sling System (AdVance XP, Virtue) — 12 registros
-      // PAH = Female Sling/Urethral Support (Altis, Aris) — 20 registros
-      // EZY = Artificial Urinary Sphincter (AMS 800) — 142 PMAs
+      // OTM = Male Sling System — 12 registros
+      // PAH = Female Urethral Support/Sling — 20 registros
+      // EZY = Artificial Urinary Sphincter (PMA) — 142 registros
       'Incontinência — Sling Masculino': [
-        {code:'OTM',label:'Sling Masculino (AdVance / Virtue)',desc:'Slings para incontinência urinária masculina pós-prostatectomia — AdVance XP, Virtue Male Sling',filter:null},
+        {code:'OTM',label:'Sling Masculino (AdVance / Virtue)',desc:'Slings pós-prostatectomia — AdVance XP Male Sling, Virtue Male Sling (Coloplast)',filter:null},
       ],
       'Incontinência — Sling Feminino': [
-        {code:'PAH',label:'Sling Feminino (Altis / Aris)',desc:'Slings e suportes uretrais femininos para IUE — Altis Single Incision, Aris TOT',filter:null},
+        {code:'PAH',label:'Sling Feminino (Altis / Aris TOT)',desc:'Slings e suportes uretrais — Altis Single Incision, Aris TOT (Coloplast)',filter:null},
       ],
       'Incontinência — Esfíncter Artificial': [
-        {code:'EZY',label:'Esfíncter Urinário Artificial (AMS 800)',desc:'AUS para incontinência grave — AMS 800, ZSI 375/500 e similares (PMA Classe III)',filter:null},
+        {code:'EZY',label:'Esfíncter Urinário Artificial (AMS 800)',desc:'AUS para incontinência grave — AMS 800 (Boston Scientific), ZSI 375/500 (PMA Classe III)',filter:null},
       ],
 
       // ── NEUROMODULAÇÃO ────────────────────────────────────────────────────
-      // QON = Sacral Neuromodulation (InterStim, Axonics) — 441 PMAs
+      // QON = Sacral Neuromodulation System (PMA) — 441 registros
       'Neuromodulação Sacral': [
-        {code:'QON',label:'Neuromodulação Sacral (InterStim / Axonics)',desc:'SNM para bexiga hiperativa e incontinência — InterStim Micro (Medtronic), Axonics R20/F15',filter:null},
+        {code:'QON',label:'Neuromodulação Sacral (InterStim / Axonics)',desc:'SNM para bexiga hiperativa — InterStim Micro/II (Medtronic), Axonics R20/F15 (PMA)',filter:null},
       ],
 
       // ── PRÓSTATA / HPB ────────────────────────────────────────────────────
-      // PEW = UroLift System (NeoTract/Teleflex) — 11 registros
-      // KNS = Rezum Water Vapor System — 187 registros
-      // PZP = Aquablation Robotic System (PROCEPT) — 7 registros
+      // PEW = UroLift — 11 registros
+      // KNS = Rezum Water Vapor — 187 registros
+      // PZP = Aquablation PROCEPT — 7 registros
+      // QRH = Optilume Urethral DCB (PMA) — nicho uretra
+      // QXB = Optilume BPH (PMA 2025) — nicho HPB
       'HPB — Levantamento Prostático': [
-        {code:'PEW',label:'UroLift (Levantamento Prostático)',desc:'Implante de tração prostática — UroLift System, UroLift ATC (NeoTract/Teleflex)',filter:null},
+        {code:'PEW',label:'UroLift (Levantamento Prostático)',desc:'Implante de tração prostática minimamente invasivo — UroLift System, UroLift ATC (NeoTract/Teleflex)',filter:null},
       ],
       'HPB — Ablação por Vapor / Robótica': [
-        {code:'KNS',label:'Rezum Water Vapor Therapy',desc:'Ablação por vapor de água para HPB — Rezum System (Boston Scientific)',filter:null},
+        {code:'KNS',label:'Rezum Water Vapor Therapy',desc:'Ablação por vapor de água — Rezum System (Boston Scientific)',filter:null},
         {code:'PZP',label:'Aquablation Robótica (PROCEPT)',desc:'Ressecção robótica guiada por ultrassom — HYDROS Robotic System (PROCEPT BioRobotics)',filter:null},
+      ],
+      'HPB — Dispositivos Intravesicais': [
+        {code:'QXB',label:'Optilume BPH (Drug-Coated Catheter)',desc:'Cateter com paclitaxel para HPB — Optilume BPH (Urotronic, PMA 2025)',filter:null},
+      ],
+
+      // ── URETRA / ESTENOSE ─────────────────────────────────────────────────
+      // QRH = Optilume Urethral DCB (PMA 2022)
+      'Uretra — Estenose': [
+        {code:'QRH',label:'Optilume Urethral Drug-Coated Balloon',desc:'Balão com paclitaxel para estenose uretral — Optilume Urethral DCB (Urotronic, PMA 2022)',filter:null},
       ],
 
       // ── DISFUNÇÃO ERÉTIL ──────────────────────────────────────────────────
-      // MIB = Penile Implant/Prosthesis — 89 registros
+      // MIB = Penile Implant — 89 registros
       'Disfunção Erétil — Prótese Peniana': [
         {code:'MIB',label:'Prótese Peniana Inflável (3 peças)',desc:'IPP 3 peças — AMS 700 LGX, Titan Touch (Coloplast), AugMENTA, ZSI 475',filter:null},
-        {code:'MIB',label:'Prótese Peniana Semi-rígida / Maleável',desc:'Implante peniano maleável — AMS Spectra, Tactra (Coloplast), Genesis (Mentor)',filter:null},
+        {code:'MIB',label:'Prótese Peniana Semi-rígida / Maleável',desc:'Implante maleável — AMS Spectra, Tactra (Coloplast), Genesis (Mentor)',filter:null},
       ],
 
-      // ── LITÍASE / ENDOSCOPIA UROLÓGICA ───────────────────────────────────
+      // ── ENDOSCOPIA UROLÓGICA ──────────────────────────────────────────────
+      // FAJ = Cystoscope/Nephroscope — 91 registros
+      // FGB = Ureteroscope (single-use LithoVue etc.) — 113 registros
+      // FGA = Nephroscope percutâneo — 10 registros
+      // HIH = Resectoscope (TURP/TURBT) — 170 registros
+      'Endoscopia — Cistoscópio / Nefroscópio': [
+        {code:'FAJ',label:'Cistoscópio / Nefroscópio',desc:'Endoscópios vesicais e renais — CFlex, LithoVue, single-use e reutilizáveis',filter:null},
+      ],
+      'Endoscopia — Ureteroscópio': [
+        {code:'FGB',label:'Ureteroscópio Flexível (single-use)',desc:'Ureteroscópios para litíase e oncologia ureteral — LithoVue Elite, single-use digitais',filter:null},
+      ],
+      'Endoscopia — Resectoscópio (TURP/TURBT)': [
+        {code:'HIH',label:'Resectoscópio (TURP / TURBT)',desc:'Ressecção transuretral de próstata e bexiga — RZ Resectoscope, Veloxion',filter:null},
+      ],
+
+      // ── LITÍASE ───────────────────────────────────────────────────────────
       // FRB = Stent Ureteral — verificado
-      // Litotripsia laser via GEX (já mapeado) e código específico de urologia
+      // FGA = Nefrostomia percutânea (PCNL)
+      // GEX = Laser Holmium/Thulium (compartilhado com derm)
       'Litíase — Stent Ureteral': [
-        {code:'FRB',label:'Stent Ureteral (duplo J / simples)',desc:'Stents ureterais para obstrução e litíase — duplo J, monoJ, metalicos e Drug-coated',filter:null},
+        {code:'FRB',label:'Stent Ureteral (duplo J / metálico)',desc:'Stents ureterais para obstrução e litíase — duplo J, monoJ, stents metálicos',filter:null},
       ],
       'Litíase — Laser Urológico': [
-        {code:'GEX',label:'Laser Holmium / Thulium para Litotripsia',desc:'Litotripsia endoscópica por laser — Holmium YAG, Thulium fiber laser, Moses Technology',filter:null},
+        {code:'GEX',label:'Laser Holmium / Thulium para Litotripsia',desc:'Litotripsia endoscópica — Holmium YAG, Thulium fiber laser, Moses Technology (Boston Scientific)',filter:null},
+      ],
+      'Litíase — Acesso Percutâneo (PCNL)': [
+        {code:'FGA',label:'Nefroscópio Percutâneo (mini-PCNL)',desc:'Acesso percutâneo para nefrolitotripsia — mini-PCNL, ultra-mini PCNL, nefrostomia',filter:null},
+      ],
+
+      // ── BIÓPSIA E DIAGNÓSTICO ─────────────────────────────────────────────
+      // LLZ = Fusion Biopsy System (UroNav) — 2.268 registros
+      // KNW = Automatic Biopsy Needle — 361 registros
+      'Biópsia Prostática por Fusão': [
+        {code:'LLZ',label:'Biópsia por Fusão MRI-Ultrassom (UroNav)',desc:'Fusão de imagem RM+ultrassom para biópsia guiada — UroNav 4 (Philips/Invivo), Koelis',filter:null},
+      ],
+      'Biópsia — Agulha Automática': [
+        {code:'KNW',label:'Agulha de Biópsia Automática',desc:'Agulhas automáticas para biópsia — VeriEcto (Promisemed), ZeniCore e similares',filter:null},
+      ],
+
+      // ── CATETERES ─────────────────────────────────────────────────────────
+      // EZD = Cateter Hidrofílico Intermitente — 81 registros (LoFric, SpeediCath, GentleCath)
+      'Cateteres — Hidrofílicos / Intermitentes': [
+        {code:'EZD',label:'Cateter Hidrofílico Intermitente',desc:'Cateteres de alívio urinário — LoFric Elle (Wellspect), SpeediCath (Coloplast), GentleCath (Convatec)',filter:null},
+      ],
+
+      // ── URODINÂMICA ───────────────────────────────────────────────────────
+      // EXQ = Urodynamic System — 8 registros
+      'Urodinâmica': [
+        {code:'EXQ',label:'Sistema Urodinâmico',desc:'Avaliação funcional do trato urinário inferior — Glean Urodynamics, Laborie, Mediwatch',filter:null},
       ],
 
     }
