@@ -174,6 +174,33 @@ button:disabled{opacity:0.4;cursor:default;}
       <span class="sc-open" id="cnt-derm-open">— sem ANVISA</span>
     </div>
   </div>
+  <div class="spec-card" id="sp-oftalmo" onclick="selSpec('oftalmo')">
+    <div class="spec-icon">👁️</div>
+    <div class="spec-name">Oftalmologia</div>
+    <div class="spec-sub">IOL · Glaucoma · Córnea · Retina</div>
+    <div class="spec-count loading" id="cnt-oftalmo">
+      <span class="sc-total" id="cnt-oftalmo-total">—</span>
+      <span class="sc-open" id="cnt-oftalmo-open">— sem ANVISA</span>
+    </div>
+  </div>
+  <div class="spec-card" id="sp-spine" onclick="selSpec('spine')">
+    <div class="spec-icon">🧬</div>
+    <div class="spec-name">Neurocirurgia Coluna</div>
+    <div class="spec-sub">SCS · Fusão · Disco Artificial</div>
+    <div class="spec-count loading" id="cnt-spine">
+      <span class="sc-total" id="cnt-spine-total">—</span>
+      <span class="sc-open" id="cnt-spine-open">— sem ANVISA</span>
+    </div>
+  </div>
+  <div class="spec-card" id="sp-plastica" onclick="selSpec('plastica')">
+    <div class="spec-icon">🩹</div>
+    <div class="spec-name">Cirurgia Plástica</div>
+    <div class="spec-sub">Implantes · Expansores · ADM</div>
+    <div class="spec-count loading" id="cnt-plastica">
+      <span class="sc-total" id="cnt-plastica-total">—</span>
+      <span class="sc-open" id="cnt-plastica-open">— sem ANVISA</span>
+    </div>
+  </div>
 </div>
 
 <!-- BUSCA -->
@@ -551,6 +578,82 @@ const CATALOG = {
 
     }
   }
+,
+
+  oftalmo: {
+    name:'Oftalmologia', icon:'👁️',
+    groups: {
+      'Lentes Intraoculares (IOL)': [
+        {code:'HQL',label:'IOL Monofocal / Premium',desc:'Lentes intraoculares — monofocais, tóricas, multifocais, EDOF — Clareon, AcrySof, TECNIS, CT Lucia (PMA Classe III)',filter:null},
+      ],
+      'Cirurgia Refrativa': [
+        {code:'LZS',label:'Excimer Laser (LASIK / LASEK / SMILE)',desc:'Sistemas de laser excimer para cirurgia refrativa — LADARVISION, WaveLight EX500, MEL 90 (PMA)',filter:null},
+      ],
+      'Glaucoma — MIGS': [
+        {code:'KYF',label:'iStent Trabecular Micro-Bypass',desc:'Micro-bypass trabecular para glaucoma — iStent, iStent inject W, iStent infinite (Glaukos)',filter:null},
+        {code:'OGO',label:'Hydrus Microstent (Alcon)',desc:'Microstent de Schlemm para glaucoma — Hydrus Microstent (PMA)',filter:null},
+      ],
+      'Glaucoma — Drenagem': [
+        {code:'KYF',label:'Tubo de Drenagem / Ahmed / Baerveldt',desc:'Dispositivos de drenagem glaucoma — Ahmed Glaucoma Valve, Baerveldt, Paul Glaucoma Implant',filter:null},
+      ],
+      'Córnea — Anel Intrastromal': [
+        {code:'LQE',label:'Anéis Corneanos (Intacs)',desc:'Segmentos intrastromais para ceratocone — Intacs, Intacs SK (Addition Technology, PMA)',filter:null},
+      ],
+      'Cristalino — Lente Fácica (ICL)': [
+        {code:'MTA',label:'ICL Implantable Collamer Lens',desc:'Lente fácica de câmara posterior — EVO Visian ICL, Visian TICL (STAAR Surgical, PMA)',filter:null},
+      ],
+      'Facoemulsificação / OVD': [
+        {code:'HQC',label:'Sistema de Facoemulsificação',desc:'Plataformas de facoemulsificação — Stellaris Elite (B&L), VERITAS (J&J), Centurion (Alcon)',filter:null},
+        {code:'LZP',label:'Dispositivo Viscoelástico (OVD)',desc:'Viscoelásticos cirúrgicos — Provisc, Viscoat, Healon, DuoVisc (Alcon, PMA)',filter:null},
+      ],
+    }
+  },
+
+  spine: {
+    name:'Neurocirurgia Coluna', icon:'🦴',
+    groups: {
+      'Neuromodulação — SCS': [
+        {code:'LGW',label:'Estimulador Medular (SCS)',desc:'Spinal cord stimulation para dor crônica — Intellis, Vanta RC (Medtronic), Spectra (BSc), Prodigy (Abbott), Prospera (Biotronik) — PMA',filter:null},
+      ],
+      'Cirurgia MIS — Coluna': [
+        {code:'MAX',label:'Cage Lombar MIS (TLIF/LLIF percutâneo)',desc:'Implantes de fusão lombar minimamente invasivos — expandíveis e impressos em titânio 3D',filter:null},
+        {code:'NKB',label:'Parafuso Pedicular Percutâneo',desc:'Fixação pedicular percutânea para cirurgia MIS de coluna',filter:null},
+      ],
+      'Fusão Cervical': [
+        {code:'ODP',label:'Cage Cervical (ACDF / ACCF)',desc:'Fusão cervical anterior — cages standalone, com placa integrada, expandíveis',filter:null},
+        {code:'KWQ',label:'Placa de Fixação Cervical',desc:'Placas cervicais anteriores para fixação e fusão cervical',filter:null},
+      ],
+      'Disco Artificial': [
+        {code:'MAX',label:'Disco Artificial Lombar (ADR)',desc:'Artroplastia discal lombar — substituição do disco intervertebral',filter:null},
+        {code:'ODP',label:'Disco Artificial Cervical (CDR)',desc:'Artroplastia discal cervical — PRESTIGE LP (Medtronic), MOBI-C (Zimmer), Prodisc-C',filter:null},
+      ],
+    }
+  },
+
+  plastica: {
+    name:'Cirurgia Plástica', icon:'🩹',
+    groups: {
+      'Implantes Mamários': [
+        {code:'FTR',label:'Implante Mamário Silicone',desc:'Próteses de silicone — MemoryGel (Mentor/J&J), Natrelle (Allergan), Sientra, Motiva (PMA Classe III)',filter:null},
+        {code:'FWM',label:'Implante Mamário Salina',desc:'Próteses de solução salina — Natrelle Saline (Allergan), Mentor Saline (PMA)',filter:null},
+      ],
+      'Expansores Teciduais': [
+        {code:'FTR',label:'Expansor Tecidual Mamário',desc:'Expansores para reconstrução mamária pós-mastectomia — Natrelle 133, Mentor CPX4',filter:null},
+      ],
+      'Matriz Dérmica Acelular (ADM)': [
+        {code:'KNW',label:'Matriz Dérmica Acelular (ADM)',desc:'ADM para reconstrução mamária — AlloDerm (LifeCell), Strattice, DermACELL, FlexHD',filter:null},
+      ],
+      'Implantes Faciais': [
+        {code:'KYP',label:'Implante Facial Silicone (Malar/Mento/Nasal)',desc:'Implantes faciais para contorno — mentoplastia, malar, nasal e mandibular',filter:null},
+      ],
+      'Lipossucção / Body Contouring': [
+        {code:'QPB',label:'Sistema de Lipossucção',desc:'Sistemas de aspiração corporal — PAL power-assisted, VASER ultrassom, BodyJet water-jet',filter:null},
+      ],
+      'Cicatrizes / Scaffolds': [
+        {code:'OWW',label:'Membrana / Scaffold para Reparos',desc:'Membranas e scaffolds para reparo de tecidos moles e cicatrizes',filter:null},
+      ],
+    }
+  }
 
 };
 
@@ -568,7 +671,7 @@ function init() {
   selSpec('neuro');
 
   // Pré-carregar totais de todas as especialidades em background
-  ['neuro','ortho','uro','derm'].forEach(s => {
+  ['neuro','ortho','uro','derm','oftalmo','spine','plastica'].forEach(s => {
     const cntEl = document.getElementById(`cnt-${s}`);
     if (cntEl) cntEl.classList.add('loading');
     loadSpecTotals(s).then(({ total, open }) => {
