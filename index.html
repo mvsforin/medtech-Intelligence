@@ -368,19 +368,56 @@ const CATALOG = {
   uro: {
     name:'Urologia', icon:'🫀',
     groups: {
-      'Incontinência': [
-        {code:'LYT',label:'Sling Uretral',desc:'Slings masculinos e femininos para incontinência urinária',filter:null},
-        {code:'FTO',label:'Esfíncter Urinário Artificial',desc:'AUS — artificial urinary sphincter',filter:null},
+
+      // ── INCONTINÊNCIA ────────────────────────────────────────────────────
+      // OTM = Male Sling System (AdVance XP, Virtue) — 12 registros
+      // PAH = Female Sling/Urethral Support (Altis, Aris) — 20 registros
+      // EZY = Artificial Urinary Sphincter (AMS 800) — 142 PMAs
+      'Incontinência — Sling Masculino': [
+        {code:'OTM',label:'Sling Masculino (AdVance / Virtue)',desc:'Slings para incontinência urinária masculina pós-prostatectomia — AdVance XP, Virtue Male Sling',filter:null},
       ],
-      'Disfunção Erétil': [
-        {code:'FTR',label:'Implante Peniano Inflável',desc:'Próteses penianas de 2 e 3 peças',filter:null},
+      'Incontinência — Sling Feminino': [
+        {code:'PAH',label:'Sling Feminino (Altis / Aris)',desc:'Slings e suportes uretrais femininos para IUE — Altis Single Incision, Aris TOT',filter:null},
       ],
-      'Próstata': [
-        {code:'GEI',label:'Ablação de Próstata',desc:'UroLift, Rezum, Aquablation e similares',filter:null},
+      'Incontinência — Esfíncter Artificial': [
+        {code:'EZY',label:'Esfíncter Urinário Artificial (AMS 800)',desc:'AUS para incontinência grave — AMS 800, ZSI 375/500 e similares (PMA Classe III)',filter:null},
       ],
-      'Stents': [
-        {code:'FRB',label:'Stent Ureteral',desc:'Stents ureterais simples e revestidos',filter:null},
+
+      // ── NEUROMODULAÇÃO ────────────────────────────────────────────────────
+      // QON = Sacral Neuromodulation (InterStim, Axonics) — 441 PMAs
+      'Neuromodulação Sacral': [
+        {code:'QON',label:'Neuromodulação Sacral (InterStim / Axonics)',desc:'SNM para bexiga hiperativa e incontinência — InterStim Micro (Medtronic), Axonics R20/F15',filter:null},
       ],
+
+      // ── PRÓSTATA / HPB ────────────────────────────────────────────────────
+      // PEW = UroLift System (NeoTract/Teleflex) — 11 registros
+      // KNS = Rezum Water Vapor System — 187 registros
+      // PZP = Aquablation Robotic System (PROCEPT) — 7 registros
+      'HPB — Levantamento Prostático': [
+        {code:'PEW',label:'UroLift (Levantamento Prostático)',desc:'Implante de tração prostática — UroLift System, UroLift ATC (NeoTract/Teleflex)',filter:null},
+      ],
+      'HPB — Ablação por Vapor / Robótica': [
+        {code:'KNS',label:'Rezum Water Vapor Therapy',desc:'Ablação por vapor de água para HPB — Rezum System (Boston Scientific)',filter:null},
+        {code:'PZP',label:'Aquablation Robótica (PROCEPT)',desc:'Ressecção robótica guiada por ultrassom — HYDROS Robotic System (PROCEPT BioRobotics)',filter:null},
+      ],
+
+      // ── DISFUNÇÃO ERÉTIL ──────────────────────────────────────────────────
+      // MIB = Penile Implant/Prosthesis — 89 registros
+      'Disfunção Erétil — Prótese Peniana': [
+        {code:'MIB',label:'Prótese Peniana Inflável (3 peças)',desc:'IPP 3 peças — AMS 700 LGX, Titan Touch (Coloplast), AugMENTA, ZSI 475',filter:null},
+        {code:'MIB',label:'Prótese Peniana Semi-rígida / Maleável',desc:'Implante peniano maleável — AMS Spectra, Tactra (Coloplast), Genesis (Mentor)',filter:null},
+      ],
+
+      // ── LITÍASE / ENDOSCOPIA UROLÓGICA ───────────────────────────────────
+      // FRB = Stent Ureteral — verificado
+      // Litotripsia laser via GEX (já mapeado) e código específico de urologia
+      'Litíase — Stent Ureteral': [
+        {code:'FRB',label:'Stent Ureteral (duplo J / simples)',desc:'Stents ureterais para obstrução e litíase — duplo J, monoJ, metalicos e Drug-coated',filter:null},
+      ],
+      'Litíase — Laser Urológico': [
+        {code:'GEX',label:'Laser Holmium / Thulium para Litotripsia',desc:'Litotripsia endoscópica por laser — Holmium YAG, Thulium fiber laser, Moses Technology',filter:null},
+      ],
+
     }
   },
 
