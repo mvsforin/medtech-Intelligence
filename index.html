@@ -193,6 +193,15 @@ button:disabled{opacity:0.4;cursor:default;}
       <span class="sc-open" id="cnt-plastica-open">— sem ANVISA</span>
     </div>
   </div>
+  <div class="spec-card" id="sp-gastro" onclick="selSpec('gastro')">
+    <div class="spec-icon">🔭</div>
+    <div class="spec-name">Gastro / Endoscopia</div>
+    <div class="spec-sub">Endoscópios · Stents · EUS · Bariátrica</div>
+    <div class="spec-count loading" id="cnt-gastro">
+      <span class="sc-total" id="cnt-gastro-total">—</span>
+      <span class="sc-open" id="cnt-gastro-open">— sem ANVISA</span>
+    </div>
+  </div>
 </div>
 
 <!-- BUSCA -->
@@ -642,6 +651,72 @@ const CATALOG = {
     }
   }
 
+,
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // GASTROENTEROLOGIA / ENDOSCOPIA DIGESTIVA — Códigos FDA verificados
+  //
+  // FDF = GI Endoscope (rígido/flexível) — 111 registros
+  // FDS = Video Endoscope System (single-use) — 75 registros
+  // NEZ = Capsule Endoscopy System — 47 registros
+  // PKL = Hemostatic Clip — 62 registros
+  // FGE = GI Stent (esofágico/biliar/duodenal/cólon) — 474 registros
+  // KNS = Electrosurgical Knife + Sphincterotome + AXIOS — 187 registros
+  // FCG = EUS FNA/FNB Needle — 133 registros
+  // ODG = Echoendoscope (EUS) — 42 registros
+  // PIF = PEG Gastrostomy Kit — 50 registros
+  // OCW = Endoscopic Suturing System (OverStitch) — 70 registros
+  // LTI = Intragastric Balloon / Lap-Band (PMA) — 160 registros
+  // QTD = Endoscopic Sleeve Gastroplasty (Apollo ESG) — 2 registros
+  // ══════════════════════════════════════════════════════════════════════════
+  gastro: {
+    name:'Gastro / Endoscopia', icon:'🔭',
+    groups: {
+
+      // ── ENDOSCÓPIOS ──────────────────────────────────────────────────────
+      'Endoscópios — Reutilizáveis': [
+        {code:'FDF',label:'Gastroscópio / Colonoscópio / Duodenoscópio',desc:'Endoscópios GI flexíveis reutilizáveis — OLYMPUS, Fujifilm, Pentax, Karl Storz (111 registros)',filter:null},
+      ],
+      'Endoscópios — Single-Use': [
+        {code:'FDS',label:'Endoscópio de Uso Único (Descartável)',desc:'Sistemas endoscópicos single-use — EvoEndo, Ambu aScope, Parburch, Fujifilm EG-S100XT (75 registros)',filter:null},
+      ],
+      'Cápsula Endoscópica': [
+        {code:'NEZ',label:'Cápsula Endoscópica (PillCam / MiroCam)',desc:'Videocápsula para intestino delgado e cólon — PillCam (Medtronic), MiroCam, CapNendo (47 registros)',filter:null},
+      ],
+
+      // ── HEMOSTASIA / TERAPÊUTICA ─────────────────────────────────────────
+      'Hemostasia Endoscópica': [
+        {code:'PKL',label:'Clip Hemostático (Hemoclip / OTSC)',desc:'Clips metálicos para hemostasia — Resolution 360 (BSc), SureClip, Hemoclip, OTSC System (62 registros)',filter:null},
+      ],
+
+      // ── ERCP / VIAS BILIARES ─────────────────────────────────────────────
+      'ERCP — Stents e Instrumentais': [
+        {code:'FGE',label:'Stent GI (Esofágico / Biliar / Duodenal / Cólon)',desc:'Stents metálicos autoexpansíveis e plásticos — Boston Scientific, Cook, Olympus, Merit (474 registros)',filter:null},
+        {code:'KNS',label:'Esfincterótomo / Agulha-faca ESD / AXIOS',desc:'Papilótomos ERCP, agulhas ESD e stent lumen-apposing AXIOS (BSc) — mesmo código FDA (187 registros)',filter:null},
+      ],
+
+      // ── EUS — ULTRASSOM ENDOSCÓPICO ──────────────────────────────────────
+      'EUS — Ecoendoscopia': [
+        {code:'ODG',label:'Ecoendoscópio (LINEAR / RADIAL)',desc:'Ecoendoscópios para diagnóstico e punção — EVIS EUS (Olympus), ScopeGuide, eSEE (42 registros)',filter:null},
+        {code:'FCG',label:'Agulha EUS-FNA / FNB',desc:'Agulhas de punção e biópsia guiadas por EUS — Acquire, SharkCore, ClearTip FNA (133 registros)',filter:null},
+      ],
+
+      // ── ACESSO ENTERAL / PEG ─────────────────────────────────────────────
+      'Acesso Enteral': [
+        {code:'PIF',label:'PEG — Gastrostomia Percutânea Endoscópica',desc:'Kits de gastrostomia percutânea para nutrição enteral — Ponsky Pull, Russell Introducer, MIC-KEY (50 registros)',filter:null},
+      ],
+
+      // ── CIRURGIA BARIÁTRICA / METABÓLICA ENDOSCÓPICA ────────────────────
+      'Bariátrica Endoscópica — Balão': [
+        {code:'LTI',label:'Balão Intragástrico (Orbera / Lap-Band)',desc:'Balão intragástrico para perda de peso — ORBERA 365 (Apollo), Lap-Band (PMA Classe III — 160 registros)',filter:null},
+      ],
+      'Bariátrica Endoscópica — Gastroplastia': [
+        {code:'QTD',label:'Gastroplastia Endoscópica (Apollo ESG NXT)',desc:'Redução gástrica endoscópica sem cirurgia — Apollo ESG NXT System, REVISE NXT (2 registros)',filter:null},
+        {code:'OCW',label:'Sutura Endoscópica (OverStitch)',desc:'Sistema de sutura endoscópica intraluminal — OverStitch NXT, OverStitch Sx (Apollo Endosurgery — 70 registros)',filter:null},
+      ],
+
+    }
+  }
 };
 
 const EU_CC  = new Set(['DE','GB','FR','IT','NL','SE','IE','CH','ES','BE','DK','AT','PT','PL','FI','NO']);
@@ -658,7 +733,7 @@ function init() {
   selSpec('neuro');
 
   // Pré-carregar totais de todas as especialidades em background
-  ['neuro','ortho','uro','derm','oftalmo','plastica'].forEach(s => {
+  ['neuro','ortho','uro','derm','oftalmo','plastica','gastro'].forEach(s => {
     const cntEl = document.getElementById(`cnt-${s}`);
     if (cntEl) cntEl.classList.add('loading');
     loadSpecTotals(s).then(({ total, open }) => {
