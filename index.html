@@ -202,6 +202,15 @@ button:disabled{opacity:0.4;cursor:default;}
       <span class="sc-open" id="cnt-gastro-open">— sem ANVISA</span>
     </div>
   </div>
+  <div class="spec-card" id="sp-onco" onclick="selSpec('onco')">
+    <div class="spec-icon">🎯</div>
+    <div class="spec-name">Oncologia Interv.</div>
+    <div class="spec-sub">Ablação · Embolização · Braquiterapia</div>
+    <div class="spec-count loading" id="cnt-onco">
+      <span class="sc-total" id="cnt-onco-total">—</span>
+      <span class="sc-open" id="cnt-onco-open">— sem ANVISA</span>
+    </div>
+  </div>
 </div>
 
 <!-- BUSCA -->
@@ -717,6 +726,66 @@ const CATALOG = {
 
     }
   }
+,
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // ONCOLOGIA INTERVENCIONISTA — Códigos FDA verificados
+  //
+  // OAB = RF/Microwave Ablation + IRE NanoKnife — 14 registros
+  // GEH = Cryoablation System — 261 registros
+  // KRD = Embolic Microspheres + Coils (PVA, HepaSphere, LOBO) — 128 registros
+  // HCG = Vascular Embolization Coils (Optima) — 184 registros
+  // KRA = Microcatheter TACE/TARE — 174 registros
+  // NAW = Y-90 Radioembolization PMA (TheraSphere + SIR-Spheres) — 27 PMAs
+  // KXK = Brachytherapy Seeds (Iodo-125/Paládio) — 151 registros
+  // KNW = Percutaneous Biopsy Needle (Mammotome/Core) — 361 registros
+  // FCG = FNA/FNB Needle (EUS + percutaneous) — 133 registros
+  // FGE = Biliary/Nephrostomy Drainage + GI Stents — 474 registros
+  // ══════════════════════════════════════════════════════════════════════════
+  onco: {
+    name:'Oncologia Interv.', icon:'🎯',
+    groups: {
+
+      // ── ABLAÇÃO TUMORAL ──────────────────────────────────────────────────
+      'Ablação — RF / Microonda / IRE': [
+        {code:'OAB',label:'Ablação RF / Microonda / NanoKnife (IRE)',desc:'Sistemas de ablação percutânea — Aliya RF (NovaBay), NanoKnife IRE (AngioDynamics), StarBurst (AngioDynamics) — 14 registros FDA',filter:null},
+      ],
+      'Ablação — Crioablação': [
+        {code:'GEH',label:'Crioablação Tumoral (Cryo)',desc:'Sistemas de crioablação percutânea — XSense (ERBE), IceSense3, ProSense, Visual-Ice (IceCure/Galil) — 261 registros FDA',filter:null},
+      ],
+
+      // ── EMBOLIZAÇÃO / TACE / TARE ────────────────────────────────────────
+      'Embolização — Microesferas': [
+        {code:'KRD',label:'Microesferas / Partículas Embólicas (PVA/HepaSphere)',desc:'Microesferas e sistemas de oclusão vascular — PVA Foam (Cook), HepaSphere (Merit), Embosphere (Merit), LOBO System — 128 registros',filter:null},
+      ],
+      'Embolização — Coils': [
+        {code:'HCG',label:'Coils de Embolização Vascular',desc:'Coils pushable e destacáveis para embolização — Optima Coil (MicroVention), Concerto Versa, Nester Coil (Cook) — 184 registros',filter:null},
+      ],
+      'Embolização — Microcateter TACE/TARE': [
+        {code:'KRA',label:'Microcateter para TACE / TARE / Embolização',desc:'Microcateteres de alta performance para quimioembolização e radioembolização — TruSelect (Penumbra), Teleport Glide — 174 registros',filter:null},
+      ],
+      'Radioembolização Y-90': [
+        {code:'NAW',label:'Y-90 Radioembolização (TheraSphere / SIR-Spheres)',desc:'Microesferas de ítrio-90 para TARE hepática — TheraSphere (Boston Scientific, PMA), SIR-Spheres (Sirtex, PMA) — 27 PMAs',filter:null},
+      ],
+
+      // ── BRAQUITERAPIA ────────────────────────────────────────────────────
+      'Braquiterapia — Sementes': [
+        {code:'KXK',label:'Sementes de Braquiterapia (Iodo-125 / Paládio-103)',desc:'Sementes radioativas para braquiterapia intersticial — IsoSeed (Eckert), OncoPatch, RadianceTx, BRAXX Esophageal — 151 registros',filter:null},
+      ],
+
+      // ── BIÓPSIA PERCUTÂNEA ───────────────────────────────────────────────
+      'Biópsia Percutânea': [
+        {code:'KNW',label:'Agulha de Biópsia Core / VAC (Mammotome)',desc:'Biópsia percutânea guiada por imagem — Mammotome (J&J), VeriEcto (Promisemed), Dual Core — 361 registros',filter:null},
+        {code:'FCG',label:'Agulha FNA / FNB Percutânea e EUS',desc:'Punção aspirativa e biópsia de fragmento — Acquire, SharkCore, ClearTip FNA (Boston Scientific) — 133 registros',filter:null},
+      ],
+
+      // ── DRENAGEM PERCUTÂNEA / STENTS ONCOLÓGICOS ─────────────────────────
+      'Drenagem Percutânea / Stents': [
+        {code:'FGE',label:'Drenagem Biliar / Nefrostomia / Stent Oncológico',desc:'Stents e cateteres de drenagem percutânea — BIOTEQ Drainage (biliar/renal), Niti-S Biliary, Endoflux (Merit) — 474 registros',filter:null},
+      ],
+
+    }
+  }
 };
 
 const EU_CC  = new Set(['DE','GB','FR','IT','NL','SE','IE','CH','ES','BE','DK','AT','PT','PL','FI','NO']);
@@ -733,7 +802,7 @@ function init() {
   selSpec('neuro');
 
   // Pré-carregar totais de todas as especialidades em background
-  ['neuro','ortho','uro','derm','oftalmo','plastica','gastro'].forEach(s => {
+  ['neuro','ortho','uro','derm','oftalmo','plastica','gastro','onco'].forEach(s => {
     const cntEl = document.getElementById(`cnt-${s}`);
     if (cntEl) cntEl.classList.add('loading');
     loadSpecTotals(s).then(({ total, open }) => {
