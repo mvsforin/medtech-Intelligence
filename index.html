@@ -122,11 +122,36 @@ button:disabled{opacity:0.4;cursor:default;}
 
 /* LAST UPDATED */
 .last-updated{font-size:10px;color:var(--text3);margin-top:1rem;text-align:right;}
+
+/* BANNER */
+.banner{background:#EAF3DE;border-bottom:1px solid #C8DFB0;padding:10px 20px;display:flex;align-items:flex-start;gap:12px;justify-content:space-between;}
+.banner-left{display:flex;gap:10px;align-items:flex-start;flex:1;}
+.banner-icon{font-size:18px;margin-top:1px;flex-shrink:0;}
+.banner-title{font-size:12px;font-weight:500;color:#1A3A08;margin-bottom:3px;}
+.banner-sub{font-size:11px;color:#3A5A18;line-height:1.5;}
+.banner-close{background:none;border:none;cursor:pointer;color:#3A5A18;font-size:14px;padding:0 4px;flex-shrink:0;opacity:0.6;}
+.banner-close:hover{opacity:1;}
+
+/* BOTÃO EXPORTAR CSV */
+.btn-export{font-size:10px;text-transform:uppercase;letter-spacing:0.05em;padding:0 12px;height:36px;border:0.5px solid var(--bd2);border-radius:3px;background:transparent;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all 0.1s;}
+.btn-export:hover:not(:disabled){background:var(--bg2);}
+.btn-export:disabled{opacity:0.3;cursor:default;}
+.btn-export svg{width:12px;height:12px;}
 </style>
 </head>
 <body>
 <div class="wrap">
 
+<div class="banner">
+  <div class="banner-left">
+    <span class="banner-icon">💡</span>
+    <div>
+      <div class="banner-title">Como usar: selecione uma especialidade → grupo → produto → <b>Buscar no FDA</b></div>
+      <div class="banner-sub">Todos os dispositivos médicos aprovados pelo FDA nos EUA. A coluna <span class="tag t-op" style="font-size:10px;padding:1px 5px">Sem ANVISA</span> indica produtos sem registro brasileiro identificado — candidatos a prospecção e importação.</div>
+    </div>
+  </div>
+  <button class="banner-close" onclick="this.closest('.banner').style.display='none'">✕</button>
+</div>
 <div class="topbar">
   <div class="logo">MedTech <em>Intelligence</em></div>
   <div class="topright">
@@ -223,6 +248,12 @@ button:disabled{opacity:0.4;cursor:default;}
       <option value="">— selecione o produto —</option>
     </select>
     <button class="btn-search" id="btnSearch" onclick="runSearch()">Buscar no FDA ↗</button>
+    <button class="btn-export" id="btnExport" onclick="exportCSV()" disabled title="Exportar resultados em CSV">
+      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M6 1v7M3 6l3 3 3-3M1 10h10"/>
+      </svg>
+      CSV
+    </button>
     <button class="btn-reset" onclick="resetAll()">Limpar</button>
   </div>
   <div class="progress-wrap"><div class="progress-bar" id="pb"></div></div>
@@ -798,6 +829,60 @@ let fSt='all', fRg='all', fYr='all', curSpec='neuro', curCode=null;
 const stOrder = {open:0, check:1, taken:2};
 
 // ── INICIALIZAÇÃO ─────────────────────────────────────────────────────────────
+// ─── EXPORTAR CSV ────────────────────────────────────────────────────────────
+function exportCSV() {
+  if (!filtered.length) return;
+
+  const spec  = CATALOG[curSpec];
+  const grp   = document.getElementById('grpSel').value   || 'todos';
+  const prod  = document.getElementById('codeSel').value  || curCode || 'resultados';
+  const ts    = new Date().toISOString().slice(0,10);
+  const fname = `medtech_${curSpec}_${prod}_${ts}.csv`;
+
+  // Cabeçalho
+  const cols = [
+    'Número FDA', 'Tipo', 'Nome do Produto', 'Fabricante',
+    'País', 'Classe', 'Data Aprovação FDA', 'Meses desde FDA',
+    'Status ANVISA', 'Oportunidade (<24m)', 'Código FDA', 'Observação ANVISA'
+  ];
+
+  const rows = filtered.map(d => [
+    d.fda_number        || '',
+    d.submission        || '',
+    (d.device_name      || '').replace(/"/g,'""'),
+    (d.applicant        || '').replace(/"/g,'""'),
+    d.country_code      || '',
+    d.device_class      || '',
+    d.decision_date     || '',
+    d.months_since != null ? d.months_since : '',
+    d.anvisa_status === 'open'  ? 'Sem ANVISA' :
+    d.anvisa_status === 'check' ? 'Verificar'  : 'Registrado',
+    d.is_opportunity ? 'Sim' : 'Não',
+    d.product_code      || '',
+    (d.anvisa_note      || '').replace(/"/g,'""'),
+  ]);
+
+  const csv = [cols, ...rows]
+    .map(r => r.map(v => `"${v}"`).join(','))
+    .join('\n');
+
+  // BOM para Excel abrir corretamente com UTF-8
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = fname;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  // Feedback visual
+  const btn = document.getElementById('btnExport');
+  const orig = btn.innerHTML;
+  btn.innerHTML = '✓ Exportado';
+  btn.style.color = 'var(--g-tx)';
+  setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; }, 2000);
+}
+
 function init() {
   selSpec('neuro');
 
@@ -1053,6 +1138,8 @@ function resetAll() {
 function resetMetrics() {
   ['mT','mO','mN','mC','mP'].forEach(id => document.getElementById(id).textContent = '—');
   document.getElementById('rcnt').textContent = 'Aguardando busca.';
+  const exportBtn = document.getElementById('btnExport');
+  if (exportBtn) exportBtn.disabled = true;
 }
 
 function updateMetrics() {
@@ -1085,6 +1172,10 @@ function render() {
     list.innerHTML = '<div class="state-box"><b>Sem resultados</b>Ajuste os filtros ou faça nova busca.</div>';
     return;
   }
+
+  // Habilitar botão exportar quando há resultados
+  const exportBtn = document.getElementById('btnExport');
+  if (exportBtn) exportBtn.disabled = filtered.length === 0;
 
   list.innerHTML = filtered.map((d, i) => `
     <div class="row${selId===i?' sel':''}" onclick="tog(${i})">
