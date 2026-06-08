@@ -236,6 +236,15 @@ button:disabled{opacity:0.4;cursor:default;}
       <span class="sc-open" id="cnt-onco-open">— sem ANVISA</span>
     </div>
   </div>
+  <div class="spec-card" id="sp-wound" onclick="selSpec('wound')">
+    <div class="spec-icon">🩼</div>
+    <div class="spec-name">Wound Care</div>
+    <div class="spec-sub">Scaffolds · Substitutos Dérmicos · NPWT</div>
+    <div class="spec-count loading" id="cnt-wound">
+      <span class="sc-total" id="cnt-wound-total">—</span>
+      <span class="sc-open" id="cnt-wound-open">— sem ANVISA</span>
+    </div>
+  </div>
 </div>
 
 <!-- BUSCA -->
@@ -817,6 +826,60 @@ const CATALOG = {
 
     }
   }
+,
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // WOUND CARE / CICATRIZAÇÃO AVANÇADA — Códigos FDA verificados
+  //
+  // QSZ = Bioactive Scaffold (Mirragen/Engineered Tissue, NovoSorb, SiOxD) — 19 registros
+  // KGN = Dermal Substitute/Template (MatriDerm, Helios Dermal, DermiSphere) — 184 registros
+  // FRO = Wound Dressing Antimicrobial (Acticoat/Smith+Nephew, Promogran Prisma) — 702 registros
+  // OMP = NPWT System (Genadyne, Wound Geni, Nisus, Prospera) — 211 registros
+  // FTM = Reconstructive Template/Biologic (Endoform/Aroa, OviTex/TELA Bio) — 163 registros
+  // ══════════════════════════════════════════════════════════════════════════
+  wound: {
+    name:'Wound Care', icon:'🩼',
+    groups: {
+
+      // ── SCAFFOLDS BIOATIVOS ───────────────────────────────────────────────
+      // QSZ = Wound Matrix, Bioactive Glass/Synthetic Scaffold
+      // Inclui Mirragen (vidro borato — ETS), NovoSorb BTM (polímero — Polynovo),
+      // SiOxD (sílica — Sioxmed), Redermo (Beijing Kreate)
+      'Scaffolds Bioativos': [
+        {code:'QSZ',label:'Scaffold / Matriz Bioativa (Mirragen / NovoSorb / SiOxD)',desc:'Matrizes sintéticas e bioativas para cicatrização — Mirragen (vidro borato, ETS), NovoSorb BTM (Polynovo AUS), SiOxD (Sioxmed USA) — 19 registros FDA',filter:null},
+      ],
+
+      // ── SUBSTITUTOS DÉRMICOS ──────────────────────────────────────────────
+      // KGN = Dermal Regeneration Template / Dermal Substitute
+      // MatriDerm (Medskin/Dr. Suwelack), Helios Dermal Scaffold, DermiSphere,
+      // Derma-Gide (Geistlich), bovine collagen matrices
+      'Substitutos Dérmicos': [
+        {code:'KGN',label:'Substituto / Template Dérmico (MatriDerm / Helios / DermiSphere)',desc:'Scaffolds dérmicos para reconstrução de pele — MatriDerm (Medskin AG), Helios Dermal Scaffold, DermiSphere, Derma-Gide (Geistlich) — 184 registros FDA',filter:null},
+      ],
+
+      // ── TEMPLATES RECONSTRUTIVOS BIOLÓGICOS ──────────────────────────────
+      // FTM = Reconstructive Template (bioresorbable/biologic meshes for wound)
+      // Endoform (Aroa Biosurgery NZ), OviTex PRS (TELA Bio USA)
+      'Templates Reconstrutivos': [
+        {code:'FTM',label:'Template Reconstrutivo Biológico (Endoform / OviTex)',desc:'Templates biológicos e biorresorbíveis para reparo de feridas complexas — Endoform PLGA (Aroa Biosurgery NZ), OviTex PRS (TELA Bio USA) — 163 registros FDA',filter:null},
+      ],
+
+      // ── CURATIVOS AVANÇADOS ANTIMICROBIANOS ──────────────────────────────
+      // FRO = Wound Dressing, Antimicrobial (silver, collagen+ORC, hemostatic)
+      // Acticoat (Smith+Nephew), Promogran Prisma (J&J), StatSeal (Merit)
+      'Curativos Antimicrobianos': [
+        {code:'FRO',label:'Curativo Antimicrobiano (Acticoat / Promogran / StatSeal)',desc:'Curativos com prata, colágeno+ORC e agentes hemostáticos — Acticoat (Smith+Nephew), Promogran Prisma (J&J), StatSeal Disc (Merit Medical) — 702 registros FDA',filter:null},
+      ],
+
+      // ── NPWT — PRESSÃO NEGATIVA ───────────────────────────────────────────
+      // OMP = Negative Pressure Wound Therapy System
+      // Genadyne ASTRA, Wound Geni, Nisus NPWT, Prospera Spectruum
+      'NPWT — Terapia por Pressão Negativa': [
+        {code:'OMP',label:'Sistema NPWT (Genadyne / Wound Geni / Nisus / Prospera)',desc:'Sistemas de terapia por pressão negativa para feridas crônicas e cirúrgicas — Genadyne ASTRA, Wound Geni, Nisus NPWT (Cork Medical), Prospera Spectruum — 211 registros FDA',filter:null},
+      ],
+
+    }
+  }
 };
 
 const EU_CC  = new Set(['DE','GB','FR','IT','NL','SE','IE','CH','ES','BE','DK','AT','PT','PL','FI','NO']);
@@ -887,7 +950,7 @@ function init() {
   selSpec('neuro');
 
   // Pré-carregar totais de todas as especialidades em background
-  ['neuro','ortho','uro','derm','oftalmo','plastica','gastro','onco'].forEach(s => {
+  ['neuro','ortho','uro','derm','oftalmo','plastica','gastro','onco','wound'].forEach(s => {
     const cntEl = document.getElementById(`cnt-${s}`);
     if (cntEl) cntEl.classList.add('loading');
     loadSpecTotals(s).then(({ total, open }) => {
