@@ -1304,6 +1304,7 @@ function render() {
         <div class="ds">Fabricante</div>
         <div class="df"><div class="dfl">Empresa</div><div class="dfv">${d.applicant||'—'}</div></div>
         <div class="df"><div class="dfl">País</div><div class="dfv">${cname(d.country_code)}</div></div>
+        <div class="df"><div class="dfl">Website</div><div class="dfv">${mfrWeb(d.applicant)}</div></div>
         <div class="df"><div class="dfl">Código FDA</div><div class="dfv">${d.product_code||'—'}</div></div>
         <div class="dact">
           ${d.anvisa_status==='open'
@@ -1319,6 +1320,86 @@ function render() {
       </div>
     </div>
   `).join('');
+}
+
+// ── WEBSITE DO FABRICANTE ────────────────────────────────────────────────────
+// Converte o nome do fabricante num link clicável para busca no Google
+// ou usa domínio conhecido para fabricantes frequentes
+const _knownDomains = {
+  'medtronic':           'medtronic.com',
+  'boston scientific':   'bostonscientific.com',
+  'abbott':              'abbott.com',
+  'stryker':             'stryker.com',
+  'zimmer biomet':       'zimmerbiomet.com',
+  'zimmer':              'zimmerbiomet.com',
+  'johnson & johnson':   'jnjmedtech.com',
+  'depuy synthes':       'depuysynthes.com',
+  'smith & nephew':      'smith-nephew.com',
+  'wright medical':      'wmt.com',
+  'integra lifesciences':'integralife.com',
+  'integra':             'integralife.com',
+  'arthrex':             'arthrex.com',
+  'conmed':              'conmed.com',
+  'cook medical':        'cookmedical.com',
+  'cook':                'cookmedical.com',
+  'merit medical':       'merit.com',
+  'becton dickinson':    'bd.com',
+  'bd':                  'bd.com',
+  'olympus':             'olympus.com',
+  'karl storz':          'karlstorz.com',
+  'fujifilm':            'fujifilm.com',
+  'alcon':               'alcon.com',
+  'allergan':            'allergan.com',
+  'bausch':              'bausch.com',
+  'hologic':             'hologic.com',
+  'lifecell':            'lifecell.com',
+  'kci':                 'acelity.com',
+  'acelity':             'acelity.com',
+  'coloplast':           'coloplast.com',
+  'teleflex':            'teleflex.com',
+  'penumbra':            'penumbrainc.com',
+  'microvenion':         'microvention.com',
+  'terumo':              'terumo.com',
+  'biotronik':           'biotronik.com',
+  'philips':             'philips.com',
+  'siemens':             'siemens-healthineers.com',
+  'ge healthcare':       'gehealthcare.com',
+  'staar surgical':      'staar.com',
+  'glaukos':             'glaukos.com',
+  'santen':              'santen.com',
+  'polynovo':            'polynovo.com',
+  'aroa biosurgery':     'aroabiosurgery.com',
+  'tela bio':            'telabio.com',
+  'miracell':            'miracell.com',
+  'engineered tissue':   'engineeredtissue.com',
+  'procept':             'procept-biorobotics.com',
+  'apollo endosurgery':  'apolloendo.com',
+  'urotronic':           'urotronic.com',
+  'axonics':             'axonics.com',
+  'icecure':             'icecuremedical.com',
+  'galil medical':       'galilmedical.com',
+};
+
+function mfrWeb(applicant) {
+  if (!applicant) return '—';
+  const lower = applicant.toLowerCase();
+  // Procurar domínio conhecido
+  for (const [key, domain] of Object.entries(_knownDomains)) {
+    if (lower.includes(key)) {
+      return `<a href="https://${domain}" target="_blank" rel="noopener"
+        style="color:var(--teal);font-size:11px;text-decoration:none;display:inline-flex;align-items:center;gap:4px">
+        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M2 10 L10 2 M5 2 h5 v5"/>
+        </svg>${domain}</a>`;
+    }
+  }
+  // Fallback: link de busca Google pelo nome do fabricante
+  const q = encodeURIComponent(applicant + ' medical device official website');
+  return `<a href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener"
+    style="color:var(--slate);font-size:11px;text-decoration:none;display:inline-flex;align-items:center;gap:4px">
+    <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M2 10 L10 2 M5 2 h5 v5"/>
+    </svg>Buscar no Google ↗</a>`;
 }
 
 function tog(i) { selId = selId===i ? null : i; render(); }
