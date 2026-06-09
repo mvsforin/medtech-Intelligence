@@ -468,6 +468,22 @@ const CATALOG = {
         {code:'OLO',label:'Navegação Cirúrgica Ortopédica',desc:'Sistemas de navegação por imagem para artroplastia e coluna',filter:null},
       ],
 
+      // ── ORTOBIOLÓGICOS ────────────────────────────────────────────────────
+      // MUU = System, Suction, Lipoplasty (adipose tissue processing) — Classe II — 40 registros
+      //   Inclui: Lipogems (código de referência global), REVOLVE ENVI (LifeCell),
+      //   IntelliFat (Millennium Medical), SyntrFuge, KTA Adipose Kit, Smart Kit
+      // QBV = Centrifuge For Preparation Of Cell Concentrate/Plasma — Classe I — 2 registros
+      //   Inclui: SMART M-CELL Bone Marrow System e SMART M-CELL PRP System (Miracell, Coreia)
+      // KNW = Instrument, Biopsy (inclui Jamshidi e agulhas de aspiração de medula) — Classe II
+      //   Mesmo código de biópsia percutânea — 361 registros
+      'Ortobiológicos — Tecido Adiposo (tipo Lipogems)': [
+        {code:'MUU',label:'Kit Processamento Tecido Adiposo (Lipogems / REVOLVE / IntelliFat)',desc:'Sistemas de microfragmentação e purificação de tecido adiposo autólogo — Lipogems (referência global), REVOLVE ENVI 600 (LifeCell), IntelliFat (Millennium Medical), SyntrFuge — Classe II, 40 registros FDA',filter:null},
+      ],
+      'Ortobiológicos — Medula Óssea / PRP': [
+        {code:'QBV',label:'Concentrador de Medula Óssea / PRP (SMART M-CELL)',desc:'Centrífugas para concentração de células de medula óssea e PRP — SMART M-CELL Bone Marrow System e SMART M-CELL PRP System (Miracell, Coreia do Sul) — Classe I, 2 registros FDA',filter:null},
+        {code:'KNW',label:'Agulha de Aspiração de Medula Óssea (Jamshidi)',desc:'Agulhas de biópsia e aspiração de medula óssea — Jamshidi Biopsy/Aspiration Needle, OmniBone BM Kit, kits de acesso percutâneo à crista ilíaca — Classe II, 361 registros FDA',filter:null},
+      ],
+
     }
   },
 
